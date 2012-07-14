@@ -1,8 +1,9 @@
+require 'csv'
 module Finforenet
   module Models
     module CoCode
       def self.company_twitter(path="")
-      	infos = FeedInfo.create({:address => /(company|index|currency)/i})
+      	infos = FeedInfo.where({:category => /(company|index|currency)/i})
       	infos.map{|info| info.destroy}
       	path = "#{Rails.root}/company.csv" if path.blank?
         csv_file = File.new(path).read
@@ -10,14 +11,14 @@ module Finforenet
         header = Hash[csv_data.shift.each_with_index.map{| val,key | [val.downcase.gsub(" ","_"), key]}].to_options
         
         csv_data.each do |row|
-        	feed_info = FeedInfo.where(:address => row[header[:twitter]])
+        	feed_info = FeedInfo.where(:address => row[header[:twitter]]).first
         	unless feed_info
             profile_ids = ["4ed12d737b3fc6412e0001bb","4ed12d737b3fc6412e0001bc","4ed12d737b3fc6412e0001bd","4ed12d737b3fc6412e0001be"]
-            geo_profile = Profile.where({:title => /#{row[header[:geographic]}/i }).first
+            geo_profile = Profile.where({:title => /#{row[header[:geographic]]}/i }).first
             profile_ids << geo_profile.id if geo_profile
-            industry_profile = Profile.where({:title => /#{row[header[:industry]}/i }).first
+            industry_profile = Profile.where({:title => /#{row[header[:industry]]}/i }).first
             profile_ids << industry_profile.id if industry_profile
-        		feed_info = FeedInfo.create({:address  => row[header[:twitter], 
+        		feed_info = FeedInfo.create({:address  => row[header[:twitter]], 
         			                           :title    => row[header[:title]],
         			                           :category => "Company",
         			                           :profile_ids => profile_ids
