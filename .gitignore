@@ -1,0 +1,11 @@
+config/database.yml
+log/*.log
+*.*~
+*.*bak
+app/controllers/*.rb~
+app/views/*/*.html.erb~
+public/javascripts/*.js~
+public/javascripts/*.*.js~
+public/javascripts/*.*.*.js~
+app/helpers/*.rb~
+nbproject/*

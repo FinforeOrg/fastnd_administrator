@@ -1,0 +1,69 @@
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/" xmlns:gf="http://schemas.google.com/finance/2007" xmlns:gd="http://schemas.google.com/g/2005">
+  <id>http://finance.google.com/finance/feeds/user@example.com/portfolios</id>
+  <updated>2009-09-03T02:13:33.000Z</updated>
+  <category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/finance/2007#portfolio" />
+  <title type="text">Portfolio Feed</title>
+  <link rel="alternate" type="text/html" href="http://finance.google.com/finance/portfolio?action=view" />
+  <link rel="http://schemas.google.com/g/2005#feed" type="application/atom+xml" href="http://finance.google.com/finance/feeds/default/portfolios" />
+  <link rel="http://schemas.google.com/g/2005#post" type="application/atom+xml" href="http://finance.google.com/finance/feeds/default/portfolios" />
+  <link rel="self" type="application/atom+xml" href="http://finance.google.com/finance/feeds/default/portfolios?returns=true" />
+  <openSearch:totalResults>8</openSearch:totalResults>
+  <openSearch:startIndex>1</openSearch:startIndex>
+  <openSearch:itemsPerPage>8</openSearch:itemsPerPage>
+  <entry>
+    <id>http://finance.google.com/finance/feeds/user@example.com/portfolios/8</id>
+    <updated>2009-09-03T02:13:33.000Z</updated>
+    <category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/finance/2007#portfolio" />
+    <title type="text">Ruby Portfolio</title>
+    <link rel="self" type="application/atom+xml" href="http://finance.google.com/finance/feeds/default/portfolios/8" />
+    <link rel="edit" type="application/atom+xml" href="http://finance.google.com/finance/feeds/default/portfolios/8" />
+    <gd:feedLink href="http://finance.google.com/finance/feeds/user@example.com/portfolios/8/positions" />
+    <gf:portfolioData currencyCode="USD" gainPercentage="28.3636" return1w="-0.07621550591" return1y="0.0" return3m="0.0" return3y="0.0" return4w="-0.1670616114" return5y="0.0" returnOverall="0.0" returnYTD="0.0">
+      <gf:costBasis>
+        <gd:money amount="2500.0" currencyCode="USD" />
+      </gf:costBasis>
+      <gf:daysGain>
+        <gd:money amount="-2111.0001" currencyCode="USD" />
+      </gf:daysGain>
+      <gf:gain>
+        <gd:money amount="70909.0" currencyCode="USD" />
+      </gf:gain>
+      <gf:marketValue>
+        <gd:money amount="73409.0" currencyCode="USD" />
+      </gf:marketValue>
+    </gf:portfolioData>
+  </entry>
+  <entry>
+    <id>http://finance.google.com/finance/feeds/user@example.com/portfolios/9</id>
+    <updated>2009-09-03T02:13:33.000Z</updated>
+    <category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/finance/2007#portfolio" />
+    <title type="text">GMoney Test</title>
+    <link rel="self" type="application/atom+xml" href="http://finance.google.com/finance/feeds/default/portfolios/9" />
+    <link rel="edit" type="application/atom+xml" href="http://finance.google.com/finance/feeds/default/portfolios/9" />
+    <gd:feedLink href="http://finance.google.com/finance/feeds/user@example.com/portfolios/9/positions" />
+    <gf:portfolioData currencyCode="USD" gainPercentage="0.2187420382" return1w="0.0" return1y="0.0" return3m="0.0" return3y="0.0" return4w="0.0" return5y="0.0" returnOverall="0.0" returnYTD="0.0">
+      <gf:costBasis>
+        <gd:money amount="62800.0" currencyCode="USD" />
+      </gf:costBasis>
+      <gf:daysGain>
+        <gd:money amount="-351.8994" currencyCode="USD" />
+      </gf:daysGain>
+      <gf:gain>
+        <gd:money amount="13737.0" currencyCode="USD" />
+      </gf:gain>
+      <gf:marketValue>
+        <gd:money amount="76537.0" currencyCode="USD" />
+      </gf:marketValue>
+    </gf:portfolioData>
+  </entry>
+  <entry>
+    <id>http://finance.google.com/finance/feeds/user@example.com/portfolios/14</id>
+    <updated>2009-09-03T02:13:33.000Z</updated>
+    <category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/finance/2007#portfolio" />
+    <title type="text">Jam 1</title>
+    <link rel="self" type="application/atom+xml" href="http://finance.google.com/finance/feeds/default/portfolios/14" />
+    <link rel="edit" type="application/atom+xml" href="http://finance.google.com/finance/feeds/default/portfolios/14" />
+    <gd:feedLink href="http://finance.google.com/finance/feeds/user@example.com/portfolios/14/positions" />
+    <gf:portfolioData currencyCode="USD" gainPercentage="0.0" return1w="0.0" return1y="0.0" return3m="0.0" return3y="0.0" return4w="0.0" return5y="0.0" returnOverall="0.0" returnYTD="0.0" />
+  </entry>
+</feed>
