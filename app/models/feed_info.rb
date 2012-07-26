@@ -90,7 +90,7 @@ class FeedInfo < Base::FeedInfo
   end
 
   def before_saving
-    if self.valid? && self.profile_ids.count > 0
+    if self.valid? && self.profile_ids.present? && self.profile_ids.count > 0
       self.feed_info_profiles = self.profile_ids.map{|pi| FeedInfo::Profile.create({:feed_info_id => self.id, :profile_id => pi })}
     end
     if self.isRss? && !self.validate_rss

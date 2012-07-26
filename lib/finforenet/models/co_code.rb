@@ -45,14 +45,15 @@ module Finforenet
          csv_file = File.new(path).read
          csv_data = CSV.parse(csv_file)
          csv_data.shift if csv_data.first[0] =~ /title/i
+         counter = {:record => 0, :new => 0, :update => 0}
          csv_data.each do |row|
            company = CompanyCompetitor.where(:finance_keyword => row[header[:ticker]]).first
            info_obj = {:address  => row[header[:twitter]], 
                        :title    => row[header[:title]], 
                        :category => "Company"
                       }
-           company_obj = {:keyword           => row[header[:competitor_keyword]].split(/\s/).join(","),
-                          :competitor_ticker => row[header[:competitor_ticker]].split(/\s/).join(","),
+           company_obj = {:keyword           => row[header[:competitor_keyword]].to_s.split(/\s/).join(","),
+                          :competitor_ticker => row[header[:competitor_ticker]].to_s.split(/\s/).join(","),
                           :company_keyword   => "#{row[header[:ticker]]},\"#{row[header[:title]]}\"",
                           :broadcast_keyword => row[header[:title]],
                           :finance_keyword   => row[header[:ticker]],
@@ -61,14 +62,18 @@ module Finforenet
                           :company_ticker    => row[header[:ticker]]
                           }
            if company
+             counter[:update] += 1
              info = company.feed_info
              info.update_attributes(info_obj)
              company.update_attributes(company_obj)
            else
-             info = FeedInfo.create(info_obj)
-             CompanyCompetitor.create(company_obj.merge!(:feed_info_id => info.id)) if info.valid?
+             counter[:new] += 1
+             #info = FeedInfo.create(info_obj)
+             #CompanyCompetitor.create(company_obj.merge!(:feed_info_id => info.id)) if info.valid?
            end
+           counter[:record] += 1
          end
+         return counter
        end
        
     end
