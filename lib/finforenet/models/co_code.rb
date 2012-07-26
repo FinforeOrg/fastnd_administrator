@@ -38,6 +38,27 @@ module Finforenet
         	  end
          end
        end
+
+       def self.import_price(path="")
+         path = "#{Rails.root}/fastnd_extended.csv" if path.blank?
+         csv_file = File.new(path).read
+         csv_data = CSV.parse(csv_file)
+         csv_data.shift if csv_data.first[0] =~ /title/i
+         header = {:title => 0, :geography => 1, :industry => 2, :profession => 3, :tickers => 4}
+         pro_ids = ["4ed12d737b3fc6412e0001bb","4ed12d737b3fc6412e0001bc","4ed12d737b3fc6412e0001bd","4ed12d737b3fc6412e0001be"]
+         FeedInfo.where(category: /Chart|Price/i).destroy_all
+         csv_data.each do |row|
+           geo_ids = Profile.any_in(:title => row[header[:geography]].split(/\,\s/)).only(:id).map(&:id)
+           ind_ids = Profile.any_in(:title => row[header[:profession]].split(/\,\s/)).only(:id).map(&:id)
+           tickers = row[header[:tickers]].split(/\s/).map{|ticker| {:ticker => ticker}}
+           profile_ids = pro_ids + geo_ids + ind_ids
+           FeedInfo.create({:address => "Co-Codes.com", 
+                            :title => row[header[:title]], 
+                            :category => "Price", 
+                            :profile_ids => profile_ids, 
+                            :price_tickers_attributes => tickers})
+         end
+       end
        
        def self.update_company(path="")
          header = {:title => 0, :twitter => 1, :ticker => 2, :competitor_ticker => 3, :competitor_keyword => 4}

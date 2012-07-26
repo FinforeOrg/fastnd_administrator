@@ -5,10 +5,11 @@ class FeedInfo < Base::FeedInfo
   validates :title,    :presence => true
   #Associations
   has_many :user_feeds,          :dependent => :destroy
-  has_many :price_tickers,       :dependent => :destroy
+  has_many :price_tickers,       :dependent => :destroy, :autosave => true
   has_many :user_company_tabs,   :dependent => :destroy
   has_one  :company_competitor,  :dependent => :destroy
   has_many :feed_info_profiles,  :dependent => :destroy, :class_name => "FeedInfo::Profile"
+  accepts_nested_attributes_for :price_tickers, :reject_if => proc{|obj| obj[:ticker].blank? }
   attr_accessor :profile_ids
   before_save :before_saving
 
