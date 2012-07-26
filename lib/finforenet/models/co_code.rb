@@ -40,16 +40,17 @@ module Finforenet
        end
 
        def self.import_price(path="")
-         path = "#{Rails.root}/fastnd_extended.csv" if path.blank?
+         path = "#{Rails.root}/price_columns.csv" if path.blank?
          csv_file = File.new(path).read
          csv_data = CSV.parse(csv_file)
          csv_data.shift if csv_data.first[0] =~ /title/i
          header = {:title => 0, :geography => 1, :industry => 2, :profession => 3, :tickers => 4}
-         pro_ids = ["4ed12d737b3fc6412e0001bb","4ed12d737b3fc6412e0001bc","4ed12d737b3fc6412e0001bd","4ed12d737b3fc6412e0001be"]
          FeedInfo.where(category: /Chart|Price/i).destroy_all
+         PriceTicker.all.destroy_all
          csv_data.each do |row|
-           geo_ids = Profile.any_in(:title => row[header[:geography]].split(/\,\s/)).only(:id).map(&:id)
-           ind_ids = Profile.any_in(:title => row[header[:profession]].split(/\,\s/)).only(:id).map(&:id)
+           geo_ids = Profile.any_in(:title => row[header[:geography]].split(/\,\s/)).map(&:id)
+           ind_ids = Profile.any_in(:title => row[header[:industry]].split(/\,\s/)).map(&:id)
+           pro_ids = Profile.any_in(:title => row[header[:profession]].split(/\,\s/)).map(&:id)
            tickers = row[header[:tickers]].split(/\s/).map{|ticker| {:ticker => ticker}}
            profile_ids = pro_ids + geo_ids + ind_ids
            FeedInfo.create({:address => "Co-Codes.com", 
