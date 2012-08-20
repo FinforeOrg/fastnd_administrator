@@ -20,7 +20,7 @@ module FeedInfosHelper
 
   def menu_edit_prices(info)
     submenus = ""
-    if info.category == "Chart"
+    if info.category =~ /Chart|Price/i
       submenus = '<ul class="section_menu left form_tab">'
         submenus << "<li>"
           submenus << main_menu("Edit","/feed_infos/#{info.id}/edit","edit,update".include?(controller.action_name) ? true : false, true)

@@ -1,6 +1,8 @@
 class FeedInfo < Base::FeedInfo  
   field :is_populate, :type => Boolean, :default => false
+  field :position,    :type => Integer
   index :is_populate
+  index :position
 
   validates :title,    :presence => true
   #Associations
@@ -25,7 +27,7 @@ class FeedInfo < Base::FeedInfo
   end
 
   def self.all_sort_title(conditions)
-    return self.includes(:price_tickers).where(conditions).asc(:title)
+    return self.includes(:price_tickers).where(conditions).order_by([:position, :asc], [:title, :asc])
   end
 
   def validate_rss
@@ -93,6 +95,10 @@ class FeedInfo < Base::FeedInfo
   def before_saving
     if self.valid? && self.profile_ids.present? && self.profile_ids.count > 0
       self.feed_info_profiles = self.profile_ids.map{|pi| FeedInfo::Profile.create({:feed_info_id => self.id, :profile_id => pi })}
+    end
+    if self.valid? && self.position.blank?
+      lastest = self.class.where(:category => /#{self.category}/i).desc(:position).first
+      self.position = lastest ? (lastest.position.to_i + 1) : 1
     end
     if self.isRss? && !self.validate_rss
       self.errors.add(:address, "is not valid or not rss")
