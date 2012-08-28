@@ -134,7 +134,7 @@ class FeedInfosController < ApplicationController
       tickers = params[:tickers].split(/\,|\r\n|\n/ixsm)
       tickers.each do |ticker|
         ticker = ticker.gsub(/^\s|\s$/i,"")
-        PriceTicker.find_or_create_by_feed_info_id_and_ticker(params[:id],ticker) unless ticker.blank?
+        PriceTicker.find_or_create_by({:feed_info_id => params[:id], :ticker => ticker}) unless ticker.blank?
       end
     end
     @feed_info = FeedInfo.includes(:price_tickers).find(params[:id])
