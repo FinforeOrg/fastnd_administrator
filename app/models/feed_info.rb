@@ -17,7 +17,7 @@ class FeedInfo < Base::FeedInfo
 
   def self.filter_feeds_data(conditions, _limit, _page)
 	  feed_infos = self.includes(:feed_info_profiles) if conditions[:_id]
-	  return self.where(conditions).asc(:title).page(_page).per(_limit)
+	  return self.where(conditions).asc(:position).asc(:title).page(_page).per(_limit)
   end
 
   def self.all_with_competitor(conditions)
@@ -27,7 +27,7 @@ class FeedInfo < Base::FeedInfo
   end
 
   def self.all_sort_title(conditions)
-    return self.includes(:price_tickers).where(conditions).order_by([:position, :asc], [:title, :asc])
+    return self.includes(:price_tickers).where(conditions).order_by([:position, :asc]) #, [:title, :asc])
   end
 
   def validate_rss
