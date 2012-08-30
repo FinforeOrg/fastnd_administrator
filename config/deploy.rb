@@ -2,9 +2,9 @@ require 'bundler/capistrano'
 set :bundle_flags, "--deployment --quiet --binstubs --shebang ruby-local-exec"
 set :application, "FinforeAdmin"
 set :domain, "fastnd.com"
-set :repository,  "git@github.com:jackbit/finfore-admin.git"
+set :repository,  "git@github.com:FinforeOrg/fastnd_administrator.git"
 set :scm, :git
-set :branch, "staging"
+set :branch, "master"
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
 
 set :deploy_to, "~/fastnd_admin"
