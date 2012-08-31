@@ -4,7 +4,7 @@ class UserCompanyTabsController < ApplicationController
   before_filter :prepare_company_tab, :except => [:index,:new,:create]
 
   def index
-    @user_company_tabs = UserCompanyTab.all
+    @user_company_tabs = UserCompanyTab.all.sort_by(&:title)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -50,7 +50,7 @@ class UserCompanyTabsController < ApplicationController
           @user.user_company_tabs.create({:feed_info_id => id, :follower => 100, :is_aggregate => true})
         end
       end
-      @tabs = @user.user_company_tabs
+      @tabs = @user.user_company_tabs.sort_by(&:title)
     elsif params[:user_company_tab]
       @user_company_tab = @user.user_company_tabs.create(params[:user_company_tab])
     end

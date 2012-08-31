@@ -134,7 +134,7 @@ class UsersController < ApplicationController
   def company_tabs
     @user = User.find(params[:id])
     @feed_infos = Kaminari.paginate_array(CompanyCompetitor.all.map(&:feed_info)).page(params[:page]||1).per(25)
-    @tabs = @user.user_company_tabs if params[:page].blank?
+    @tabs = @user.user_company_tabs.sort_by(&:title) if params[:page].blank?
     respond_to do |format|
       if params[:partial].blank? && params[:page].blank?
         format.html { render :action => "show", :layout=> !request.xhr? }
