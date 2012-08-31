@@ -27,16 +27,16 @@
       </div>
 
         <!--[if !IE]>start table_wrapper<![endif]-->
+      <%= link_to "Save Orders", "javascript:update_ordered_table();" %>
       <div class="table_wrapper">
         <div class="table_wrapper_inner">
-          <table width="100%" cellspacing="0" cellpadding="0">
+          <table width="100%" cellspacing="0" cellpadding="0" class="orderable_table" path="<%= sorting_ticker_feed_infos_url %>">
             <tbody><tr>
               <th style="width:400px;"><span>Tickers</span></th>
               <th class="photo">Actions</th>
             </tr>
-
           <% @tickers.each do |t| %>
-            <tr class="<%= cycle("first", "second") %> account_<%= t.id %>">
+            <tr class="<%= cycle("first", "second") %> account_<%= t.id %>" id="<%= t.id %>">
               <td style="padding-left:6px" valign="top"><%= t.ticker %></td>
               <td valign="top">
                 <div class="actions_menu" style="width:110px;">
@@ -109,5 +109,17 @@
         hideLoading();
         $('#form_area').html(response);
       }
+  });
+
+  $(".orderable_table").tableDnD({
+    onDragClass: "myDragClass",
+    onDrop: function(table, row) {
+             var rows = table.tBodies[0].rows;
+             orders = "";
+    
+             for (var i=0; i<rows.length; i++) {
+                orders += rows[i].id+",";
+             }
+           }
   });
 </script>

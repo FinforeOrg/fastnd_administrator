@@ -14,6 +14,7 @@ FinforeAdmin::Application.routes.draw do
       post :search
       get :prices
       post :prices
+      get :sorting_ticker
       get :destroy_ticker
       delete :destroy_ticker
     end

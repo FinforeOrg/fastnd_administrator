@@ -129,6 +129,24 @@ class FeedInfosController < ApplicationController
     end
   end
 
+  def sorting_ticker
+    if !params[:orders].blank?
+      orders = params[:orders].gsub(/\,$/,"").split(",")
+      counter = 1
+      orders.each do |kc_id|
+        item = PriceTicker.find(kc_id)
+        if item
+          PriceTicker.update_attributes({:position => counter})
+          counter += 1
+        end
+      end
+    end
+    respond_to do |format|
+      format.html { render :text=> "SUCCESS" }
+      format.xml  { head :ok }
+    end
+  end
+
   def create_ticker
     unless params[:tickers].blank?
       tickers = params[:tickers].split(/\,|\r\n|\n/ixsm)
