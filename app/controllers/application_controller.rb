@@ -46,6 +46,7 @@ class ApplicationController < ActionController::Base
     @company_tabs_selected = false
     @noticeboards_selected = false
     @settings_selected = false
+    @prices_selected = false
   end
 
   def render_404(exception = nil)

@@ -215,12 +215,13 @@ class FeedInfosController < ApplicationController
   
   private
     def before_render
-      @suggestions_selected = true
+      @suggestions_selected = params[:action] !~ /price/i ? true : false
+      @prices_selected = params[:action] =~ /price/i ? true : false
     end
 
     def prepare_tags
       @profile_categories = ProfileCategory.includes(:profiles).asc(:title)
-      @info_categories = %w(Company Chart Podcast Rss Twitter Broadcast)
+      @info_categories = %w(Company Podcast Rss Twitter Broadcast)
     end
     
     def prepare_list(conditions = {})

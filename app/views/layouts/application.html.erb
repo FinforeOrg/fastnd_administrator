@@ -62,13 +62,15 @@
           <ul>
             <li><%= main_menu("Dashboard", "/dashboards", @dashboard_selected) %></li>
             <li>
-              <%= main_menu("Focuses Setting", "/focuses", @focuses_selected) %>
+              <%= main_menu("User Categories", "/focuses", @focuses_selected) %>
             </li>
             <li>
-              <%= main_menu("Suggestions Data", "/suggestions", @suggestions_selected) %>
-              <%= sub_menu_suggestions(@suggestions_selected) %>
+              <%= main_menu("News Sources", "/suggestions", @suggestions_selected) %>
             </li>
-            <li><%= main_menu("Company Tabs", "/company_tabs", @company_tabs_selected) %></li>
+            <li>
+              <%= main_menu("Pricing Data", "/feed_infos/prices", @prices_selected) %>
+            </li>
+            <li><%= main_menu("Company Data", "/company_tabs", @company_tabs_selected) %></li>
             <li>
               <%= main_menu("Users Management", "/users", @users_selected) %>
             </li>
