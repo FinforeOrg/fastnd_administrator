@@ -27,7 +27,7 @@
       </div>
 
         <!--[if !IE]>start table_wrapper<![endif]-->
-      <%= link_to "Save Orders", "javascript:update_ordered_table();" %>
+      <%= link_to "Save Orders", "#", :onclick=>"javascript:update_ordered_table();" %>
       <div class="table_wrapper">
         <div class="table_wrapper_inner">
           <table width="100%" cellspacing="0" cellpadding="0" class="orderable_table" path="<%= sorting_ticker_feed_infos_url %>">
@@ -111,6 +111,16 @@
       }
   });
 
+  function update_ordered_table(){
+    orders = orders.replace(/\,$/,'');
+    var _parameters = "?orders="+orders;
+    url = $(".orderable_table").attr('path') + _parameters;
+    $.get(url, function(){
+       alert("Data Ordered Successfully.");
+    });
+    return false;
+  }
+
   $(".orderable_table").tableDnD({
     onDragClass: "myDragClass",
     onDrop: function(table, row) {
@@ -120,6 +130,7 @@
              for (var i=0; i<rows.length; i++) {
                 orders += rows[i].id+",";
              }
+             orders = orders.replace(/(^\,|\,$)/,"");
            }
   });
 </script>

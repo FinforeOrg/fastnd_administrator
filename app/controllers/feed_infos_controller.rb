@@ -136,7 +136,7 @@ class FeedInfosController < ApplicationController
       orders.each do |kc_id|
         item = PriceTicker.find(kc_id)
         if item
-          PriceTicker.update_attributes({:position => counter})
+          item.update_attributes({:position => counter})
           counter += 1
         end
       end

@@ -3,6 +3,7 @@ class PriceTicker
   
   field :ticker, :type => String
   field :position, :type => Integer
+  index :position
   index :ticker
   
   belongs_to :feed_info, :index => true
