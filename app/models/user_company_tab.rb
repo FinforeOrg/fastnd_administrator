@@ -9,8 +9,10 @@ class UserCompanyTab
   belongs_to :user
   belongs_to :feed_info, :index => true
   
-  default_scope asc(:position)
-  before_create :check_position
+  delegate :title, :to => :feed_info
+  delegate :full_name, :to => :user
+  #default_scope asc(:position)
+  #before_create :check_position
   
   def check_position
 	  self.position = updated_position if self.position < 0

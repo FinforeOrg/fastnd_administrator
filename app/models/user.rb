@@ -30,6 +30,8 @@ class User
                       :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, 
                       :message => "is invalid", 
                       :if => :has_email?
+
+  before_save :before_saving
   
   def self.search_by(opts={})
     search_opts = {:created_at => {"$gte" => 2.weeks.ago.midnight, "$lte" => Time.now.utc}}
@@ -65,6 +67,10 @@ class User
       self.feed_accounts << FeedAccount.new(opts.merge!({:user_id => self.id}))
       self.save
     end
+  end
+
+  def profiles
+    Profile.find(self.user_profiles.map(&:profile_ids))
   end
   
   def create_column(account)
@@ -204,4 +210,8 @@ class User
     end
   end
 
+  private
+  def before_saving
+    check_profiles(self.profile_ids)
+  end
 end

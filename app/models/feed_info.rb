@@ -30,6 +30,10 @@ class FeedInfo < Base::FeedInfo
     return self.includes(:price_tickers).where(conditions).order_by([:position, :asc]) #, [:title, :asc])
   end
 
+  def profiles
+    Profile.find(self.feed_info_profiles.map(&:profile_id))
+  end
+
   def validate_rss
     return true unless self.isRss?
     result = HTTParty.get(self.address)
