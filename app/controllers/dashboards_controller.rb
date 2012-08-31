@@ -1,6 +1,6 @@
 class DashboardsController < ApplicationController
   before_filter :before_render
-  caches_action :chart_users, :cache_path => Proc.new { |c| c.params }, :expires_in => 6.hours
+  #caches_action :chart_users, :cache_path => Proc.new { |c| c.params }, :expires_in => 6.hours
   require 'net/http'
 
   def index

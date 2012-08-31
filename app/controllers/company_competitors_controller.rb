@@ -1,7 +1,7 @@
 class CompanyCompetitorsController < ApplicationController
     before_filter :before_render
     before_filter :prepare_tags, :only=>[:create,:edit,:new,:update,:index,:search]
-    caches_action :index, :cache_path => Proc.new { |c| c.params }, :expires_in => 12.hours
+    #caches_action :index, :cache_path => Proc.new { |c| c.params }, :expires_in => 12.hours
 
   def index
     prepare_list

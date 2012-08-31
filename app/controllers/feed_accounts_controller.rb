@@ -4,7 +4,7 @@ class FeedAccountsController < ApplicationController
   before_filter :prepare_user
   before_filter :prepare_feed_account, :only => [:edit, :update, :destroy]
   before_filter :prepare_followers
-  caches_action :edit, :cache_path => Proc.new { |c| c.params }, :expires_in => 6.hours
+  #caches_action :edit, :cache_path => Proc.new { |c| c.params }, :expires_in => 6.hours
   
   def new
     @feed_account = @user.feed_accounts.build({:window_type => "tab", :category => params[:category].to_s.gsub("search","keyword")})
