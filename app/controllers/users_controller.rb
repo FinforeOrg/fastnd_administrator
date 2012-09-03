@@ -78,7 +78,7 @@ class UsersController < ApplicationController
     if params[:user][:email_work] != @user.login
       params[:user][:login] = params[:user][:email_work]
     end
-
+    @selected_profiles = params[:user][:profile_ids]
     respond_to do |format|
       if @user.update_attributes(params[:user])
         @message = "#{@user.full_name} has been modified."
@@ -133,7 +133,8 @@ class UsersController < ApplicationController
   
   def company_tabs
     @user = User.find(params[:id])
-    @feed_infos = Kaminari.paginate_array(CompanyCompetitor.all.map(&:feed_info)).page(params[:page]||1).per(25)
+    @feed_infos = CompanyCompetitor.all.map(&:feed_info).sort_by(&:title)
+   # @feed_infos = Kaminari.paginate_array(CompanyCompetitor.all.map(&:feed_info)).page(params[:page]||1).per(25)
     @tabs = @user.user_company_tabs.sort_by(&:title) if params[:page].blank?
     respond_to do |format|
       if params[:partial].blank? && params[:page].blank?

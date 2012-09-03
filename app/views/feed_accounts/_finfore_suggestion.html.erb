@@ -1,3 +1,39 @@
+<style>
+.dataTables_filter{
+  float:right;
+}
+.dataTables_length{
+  float:left;
+}
+.paging_full_numbers {
+    height: 22px;
+    line-height: 22px;
+    width: 400px;
+}
+.paging_full_numbers a:active {
+    outline: medium none;
+}
+.paging_full_numbers a:hover {
+    text-decoration: none;
+}
+.paging_full_numbers a.paginate_button, .paging_full_numbers a.paginate_active {
+    border: 1px solid #AAAAAA;
+    color: #333333 !important;
+    cursor: pointer;
+    margin: 0 3px;
+    padding: 2px 5px;
+}
+.paging_full_numbers a.paginate_button {
+    background-color: #DDDDDD;
+}
+.paging_full_numbers a.paginate_button:hover {
+    background-color: #CCCCCC;
+    text-decoration: none !important;
+}
+.paging_full_numbers a.paginate_active {
+    background-color: #99B3FF;
+}
+</style>
 <div class="module">
   <!--[if !IE]>start module top<![endif]-->
   <div class="module_top">
@@ -10,12 +46,14 @@
     <div class="module_options">
       <div class="table_wrapper">
         <div class="table_wrapper_inner">
-          <table width="100%" cellspacing="0" cellpadding="0">
-            <tbody><tr>
+          <table width="100%" cellspacing="0" cellpadding="0" id="table_suggestion" style="clear:both">
+            <thead><tr>
               <th style="padding:0px;"><span>&nbsp;</span></th>
               <th style="width:24px;"><span>&nbsp;</span></th>
               <th><span>Description</span></th>
             </tr>
+          </thead>
+          <tbody>
           <% unless @feed_infos.nil? %>
           <% @feed_infos.each do |info| %>
             <tr class="<%= cycle("first", "second") %> info_<%= info.id %>">
@@ -36,7 +74,7 @@
         </div>
       </div>
       <%#= page_entries_info(@feed_infos).html_safe unless @feed_infos.nil? %>
-      <%= paginate(@feed_infos) unless @feed_infos.nil? %>
+      <%#= paginate(@feed_infos) unless @feed_infos.nil? %>
       <script>
         $('.module_options .pagination a').click(function() {
           var href = $(this).attr('href') + "#finforeSuggestion";
@@ -50,7 +88,13 @@
           });
           return false;
         });
-        
+
+       $(document).ready( function() {
+  	$('#table_suggestion').dataTable( {
+   		 "iDisplayLength": 25,
+           "sPaginationType": "full_numbers"
+ 	 } );
+       });       
         $('#finforeSuggestion .edit_module.add_module').click(function(){
           var _inputs = $('#finforeSuggestion input:checkbox:checked');
           if(_inputs.length > 0){

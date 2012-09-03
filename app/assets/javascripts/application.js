@@ -20,3 +20,4 @@
 //= require tiny_mce/jquery.tinymce
 //= require finfore.net.core
 //= require table.dnd
+//= require jquery.dataTables

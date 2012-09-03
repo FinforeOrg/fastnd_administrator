@@ -46,7 +46,7 @@
 									<span class="input_wrapper"><%= f.check_box :is_public, :class=>"checkbox" %> check it for public profile.</span>
 								</div>
 							</div>
-							<% selected_profiles = @user.selected_profiles %>
+							<% selected_profiles = @selected_profiles || @user.selected_profiles %>
 	            <% @categories.all.each do |category| %>
 	            
 		            <div class="row">
