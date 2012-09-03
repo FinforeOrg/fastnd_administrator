@@ -6,7 +6,7 @@ class FeedInfosController < ApplicationController
     prepare_list
     if params[:export].present? && @feed_infos.count > 0
       build_file('text/csv', "#{Time.now.to_i}.csv")
-      render :text => @feed_infos.to_csv
+      render :text => to_csv(@feed_infos)
     else
       respond_to do |format|
         if params[:partial].blank?
@@ -231,7 +231,7 @@ class FeedInfosController < ApplicationController
     
     def prepare_list(conditions = {})
       params[:page] = params[:page] || 1
-      
+      params[:per_page] = params[:per_page] || 25      
       if !params[:Search].blank? || !params[:filter_by].blank?
         category = params[:filter_by].downcase
         category = nil if category == "all"
@@ -241,7 +241,7 @@ class FeedInfosController < ApplicationController
       elsif params[:pid]
         conditions = FeedInfo.send("#{category}_query", conditions)
       end
-      @feed_infos = FeedInfo.filter_feeds_data(conditions,(params[:per_page]||25), params[:page]||1)
+      @feed_infos = FeedInfo.filter_feeds_data(conditions,params[:per_page], params[:page])
     end
 
 end

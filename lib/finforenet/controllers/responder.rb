@@ -69,22 +69,18 @@ module Finforenet
 				  def is_authentic
 				    current_user || params[:auth_token] || params[:finfore_token]
 				  end
+                               
+      def to_csv(collections)
+        csv_string = CSV.generate do |csv|
+          csv << collections.first.class.CsvHeader
+          collections.each do |row|
+            csv << row.csv_row
+          end
+        end
+      end
       end
       
     end
   end
 end
 
-Array.class_eval do
-
-    def to_csv
-      raise "No data could be exported. You could not export blank record. Please try again" if self.first.blank?
-      csv_string = CSV.generate do |csv|
-        csv << self.first.class.CsvHeader
-        self.each do |row|
-          csv << row.csv_row
-        end
-      end
-    end
-
- end

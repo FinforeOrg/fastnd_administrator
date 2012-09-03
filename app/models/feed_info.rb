@@ -31,19 +31,18 @@ class FeedInfo < Base::FeedInfo
   end
 
    def self.CsvHeader
-    ["id", "title", "category", "address", "geographic", "profession", "sector"]
+    categories = ProfileCategory.all.map(&:title)
+    ["Id", "Title", "Category", "Address"] + categories
   end
 
   def csv_row
-    profile_ids = FeedInfo::Profile.where(feed_info_id: self.id).map(&:profile_id)
-    [self.id.to_s, self.title, self.category, self.address, profiles_by("geo", profile_ids), profiles_by("pro", profile_ids), profiles_by("sect", profile_ids)]
+    profile_ids = self.feed_info_profiles.map(&:profile_id)
+    row = [self.id.to_s, self.title, self.category, self.address]
+    ProfileCategory.all.each do |pc|
+      row << pc.profiles.where(:_id.in => profile_ids).map(&:title).join(",")
+    end
+    row
   end
-
-  def profiles_by(keyword, profile_ids)
-    profile_category = ProfileCategory.where(title: /#{keyword}/i).first
-    return "" if profile_category.blank?
-    profile_category.profiles.find(profile_ids).map(&:title).join(",")   
-  end  
 
   def profiles
     Profile.find(self.feed_info_profiles.map(&:profile_id))
