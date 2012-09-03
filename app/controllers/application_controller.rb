@@ -83,5 +83,21 @@ class ApplicationController < ActionController::Base
   def prepare_followers
    @followers = [["Any no. of followers",0],["At least 100 followers",100],["At least 1000 followers",1000]]
   end
+  
+  def build_file(content_type, filename)
+      #this is required if you want this to work with IE
+      if request.env['HTTP_USER_AGENT'] =~ /msie/i
+        headers['Pragma'] = 'public'
+        headers["Content-type"] = "text/plain"
+        headers['Cache-Control'] = 'no-cache, must-revalidate, post-check=0, pre-check=0'
+        headers['Content-Disposition'] = "attachment; filename=\"#{filename}\""
+        headers['Expires'] = "0"
+      else
+        headers["Content-Type"] ||= content_type
+        headers["Content-Disposition"] = "attachment; filename=\"#{filename}\""
+        headers["Content-Transfer-Encoding"] = "binary"
+      end
+  end
+
 
 end

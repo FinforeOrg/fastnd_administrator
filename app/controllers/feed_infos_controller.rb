@@ -4,13 +4,18 @@ class FeedInfosController < ApplicationController
   
   def index
     prepare_list
-    respond_to do |format|
-      if params[:partial].blank?
-        format.html {render :layout=>!request.xhr?}
-      else
-        format.html {render :partial =>  "list", :layout=>!request.xhr?}
+    if params[:export].present? && @feed_infos.count > 0
+      build_file('text/csv', "#{Time.now.to_i}.csv")
+      render :text => @feed_infos.to_csv
+    else
+      respond_to do |format|
+        if params[:partial].blank?
+          format.html {render :layout=>!request.xhr?}
+        else
+          format.html {render :partial =>  "list", :layout=>!request.xhr?}
+        end
+        format.xml  { render :xml => @feed_infos }
       end
-      format.xml  { render :xml => @feed_infos }
     end
   end
 

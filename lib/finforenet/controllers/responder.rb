@@ -74,3 +74,17 @@ module Finforenet
     end
   end
 end
+
+Array.class_eval do
+
+    def to_csv
+      raise "No data could be exported. You could not export blank record. Please try again" if self.first.blank?
+      csv_string = CSV.generate do |csv|
+        csv << self.first.class.CsvHeader
+        self.each do |row|
+          csv << row.csv_row
+        end
+      end
+    end
+
+ end
