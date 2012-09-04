@@ -118,7 +118,8 @@ class FeedAccountsController < ApplicationController
     def prepare_suggestions
       @feed_infos = []
       @category = @feed_account.category
-      @show_all = false
+      #@show_all = false
+      @show_all = true
       if @category !~ /google|gmail|portfolio|linkedin|facebook|keyword/i
         @conditions = FeedInfo.send("#{@category}_query")
         @conditions = FeedInfo.profiles_query(@user,@conditions) if profileable?
@@ -137,8 +138,9 @@ class FeedAccountsController < ApplicationController
       elsif is_all_companies
          @feed_infos = CompanyCompetitor.all.map(&:feed_info).page(params[:page]||1).per(25)
       elsif is_chart || @show_all
-        @feed_infos = FeedInfo.all_sort_title(@conditions).page(params[:page]||1).per(25)
-        @paginateable = true if @show_all
+        @feed_infos = FeedInfo.all_sort_title(@conditions)
+        #.page(params[:page]||1).per(25)
+        #@paginateable = true if @show_all
       end if @conditions.present?
       @feed_infos = [] if @conditions.blank?
     end

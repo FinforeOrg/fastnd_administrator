@@ -71,6 +71,9 @@ module Finforenet
 		    def chart_query(options={})
 		    	options.merge!({:category => /chart|price/i, :title => /\w|\W/i})
 		    end  
+                    def price_query(options={})
+                      chart_query(options)
+                    end
       end
       
     end

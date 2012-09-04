@@ -49,6 +49,7 @@ class UsersController < ApplicationController
     params[:user][:password] = params[:user][:password_confirmation] = generate_password if params[:user][:password].blank?
     @user = User.new(params[:user])
     @is_populate = params[:is_populate]
+    @is_populate = false if @is_populate == "false"
     respond_to do |format|
       if @user.save
         cache_expiration
@@ -161,8 +162,8 @@ class UsersController < ApplicationController
     end
 
     def send_thanks_email(password)
-      UserMailer.deliver_welcome_email(@user,password)
-      UserMailer.deliver_new_user_to_admin(@user)
+      UserMailer.welcome_email(@user,password).deliver
+      UserMailer.new_user_to_admin(@user).deliver
     end
 
     def start_autopopulate

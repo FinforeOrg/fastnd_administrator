@@ -92,8 +92,8 @@ class User
     
   def create_autopopulate
     ['rss', 'podcast', 'chart'].each do |column|
-       options = send("#{column}_query")
-       options = populated_query(options).merge!(profiles_query(self))   
+       options = FeedInfo.send("#{column}_query")
+       options = FeedInfo.populated_query(options).merge!(profiles_query(self))   
        
        new_column = FeedAccount.new(options) unless column.match(/chart/i)
        feed_infos = FeedInfo.search_populates(options) 

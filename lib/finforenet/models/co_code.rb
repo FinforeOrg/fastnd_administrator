@@ -60,6 +60,36 @@ module Finforenet
                             :price_tickers_attributes => tickers})
          end
        end
+
+       def self.update_feed_infos(path)
+         header = {:id => 0, :title => 1, :category => 2, :address => 3, :industry => 4, :geography => 5, :profession => 6}
+         csv_data = CSV.read(path, :encoding => 'windows-1251:utf-8')
+         csv_data.shift if csv_data.first[0] =~ /title/i
+         total_update = 0
+         total_create = 0
+         csv_data.each do |row|
+           profile_titles = row[header[:industry]].split(",") + row[header[:geography]].split(",") + row[header[:profession]].split(",")
+           profile_titles = profile_titles.map{|x| x.gsub(/^\s|\s$/,"")}.compact.uniq
+           profile_ids = Profile.any_in({:title => profile_titles}).map(&:id)
+           opts = {:address => row[header[:address]], :title => row[header[:title]], :category => row[header[:category]], :profile_ids => profile_ids }
+           if row[header[:id]].present?
+             info = FeedInfo.find(row[header[:id]])
+             unless info
+               info = FeedInfo.where({:address => row[header[:address]], :category => /#{row[header[:category]]}/i }).first
+             end
+             info.update_attributes(opts) 
+             if info
+               info.update_attributes(opts) 
+               total_create += 1
+             end
+           end
+           unless info
+             total_update += 1
+             info = FeedInfo.create(opts)
+           end
+         end
+         return {:total_update => total_update, :total_create => total_create}
+       end
        
        def self.update_company(path="")
          header = {:title => 0, :twitter => 1, :ticker => 2, :competitor_ticker => 3, :competitor_keyword => 4}
