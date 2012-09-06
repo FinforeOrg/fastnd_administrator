@@ -67,6 +67,15 @@ module Finforenet
 				    	          })
 		    	return options
 		    end
+
+                    def broadcast_query(options={})
+                        options.merge!({:category => /video|youtube|broadcast/i,
+                                             "$and" => [{:address => REGEX_HTTP},
+                                                              {:address => /youtube/i}
+                                                             ]
+                                                  })
+                        return options
+                    end
 		    
 		    def chart_query(options={})
 		    	options.merge!({:category => /chart|price/i, :title => /\w|\W/i})
