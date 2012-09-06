@@ -49,9 +49,12 @@ class FeedInfo < Base::FeedInfo
   end
 
   def validate_rss
-    return true unless self.isRss?
-    result = HTTParty.get(self.address)
-    result.headers['content-type'] =~ /xml|rss|atom/i || result.body =~ /(\s*[<][\?]xml[^>?]+\?>\s)/i
+    return true
+    #return true unless self.isRss?
+    #result = HTTParty.get(self.address)
+    #result.headers['content-type'] =~ /xml|rss|atom/i || result.body =~ /(\s*[<][\?]xml[^>?]+\?>\s)/i
+    #rescue
+    #  return false
   end
 
   def email_invalid_rss

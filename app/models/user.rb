@@ -72,6 +72,21 @@ class User
   def profiles
     Profile.find(self.user_profiles.map(&:profile_ids))
   end
+
+  def profession
+    category = ProfileCategory.where(:title => /pro/i).first
+    category.profiles.where(:_id.in => self.user_profiles.map(&:profile_ids)).map(&:title).join(", ")
+  end
+
+  def geographic
+    category = ProfileCategory.where(:title => /geo/i).first
+    category.profiles.where(:_id.in => self.user_profiles.map(&:profile_ids)).map(&:title).join(", ")
+  end
+
+  def industry
+    category = ProfileCategory.where(:title => /ind/i).first
+    category.profiles.where(:_id.in => self.user_profiles.map(&:profile_ids)).map(&:title).join(", ")
+  end
   
   def create_column(account)
 	  account = FeedAccount.new(account) if account.class.equal?(Hash)

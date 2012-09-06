@@ -77,7 +77,8 @@ class ApplicationController < ActionController::Base
   end
 
   def generate_password
-    return (1..8).map{ (0..?z).map(&:chr).grep(/[a-z\d]/i)[rand(62)]}.join
+    return SecureRandom.hex(4)
+    #return (1..8).map{ (0..?z).map(&:chr).grep(/[a-z\d]/i)[rand(62)]}.join
   end
 
   def prepare_followers

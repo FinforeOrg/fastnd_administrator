@@ -117,7 +117,7 @@ class FeedAccountsController < ApplicationController
     
     def prepare_suggestions
       @feed_infos = []
-      @category = @feed_account.category
+      @category = @feed_account.category.downcase
       #@show_all = false
       @show_all = true
       if @category !~ /google|gmail|portfolio|linkedin|facebook|keyword/i
