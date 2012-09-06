@@ -19,12 +19,12 @@ class FeedInfo < Base::FeedInfo
     result = self
     result = result.includes(:feed_info_profiles) if conditions[:_id]
     result = result.where(conditions)
-    if conditions[:category] && conditions[:category] =~ /price|chart/i
+    if conditions[:category] && conditions[:category].to_s =~ /price|chart/i
       result = result.asc(:position).asc(:title)
     else
       result = result.asc(:title)
     end
-    return result
+    return result.page(_page).per_page(_limit)
   end
 
   def self.all_with_competitor(conditions)
@@ -35,7 +35,7 @@ class FeedInfo < Base::FeedInfo
 
   def self.all_sort_title(conditions)
     result = self.includes(:price_tickers).where(conditions)
-    if conditions[:category] && conditions[:category] =~ /price|chart/i
+    if conditions[:category] && conditions[:category].to_s =~ /price|chart/i
       result = result.order_by([:position, :asc], [:title, :asc])
     else
       result = result.asc(:title)
