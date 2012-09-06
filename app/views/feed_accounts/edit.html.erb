@@ -40,14 +40,14 @@
             <!--[if !IE]>end module bottom<![endif]-->
           </div>
           <!--[if !IE]>end module<![endif]-->
-         <% if has_suggest(@feed_account.category) && @feed_account.id %>
+         <% if has_suggest(@feed_account.category) && !@feed_account.new_record? %>
           <div id="finforeSuggestion">
            <%= render :partial => "finfore_suggestion" %>
           </div>
          <% end %>
         </div>
         <!--[if !IE]>end product content<![endif]-->
-        <% if has_suggest(@feed_account.category) && @feed_account.id %>
+        <% if has_suggest(@feed_account.category) && !@feed_account.new_record? %>
           <div id="columnFeed">
             <%= render :partial => "column_feeds" %>
           </div>

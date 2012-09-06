@@ -44,6 +44,7 @@ class FeedAccountsController < ApplicationController
         end
         format.xml  { render :xml => @feed_account, :status => :created, :location => @feed_account }
       else
+        prepare_suggestions
         format.html { render :action => "edit",:layout=> !request.xhr? }
         format.xml  { render :xml => @feed_account.errors, :status => :unprocessable_entity }
       end
@@ -51,6 +52,7 @@ class FeedAccountsController < ApplicationController
   end
 
   def update
+    prepare_suggestions
     respond_to do |format|
       if @feed_account.update_attributes(params[:feed_account])
         @message = "#{@feed_account.name} has been modified."
