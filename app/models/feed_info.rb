@@ -24,7 +24,7 @@ class FeedInfo < Base::FeedInfo
     else
       result = result.asc(:title)
     end
-    return result.page(_page).per_page(_limit)
+    return result.page(_page).per(_limit)
   end
 
   def self.all_with_competitor(conditions)

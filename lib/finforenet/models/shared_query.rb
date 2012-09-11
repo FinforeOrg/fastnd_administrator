@@ -24,8 +24,8 @@ module Finforenet
 		    end
 		    
 		    def company_query(options={})
-		    	single_ticker = {"$and" => [{:category => REGEX_COMPANY}, {:category => {"$not" => /chart/i}}, {:address => /^\W/i}, 
-{:address => {"$not" => /\s+/}}, {:address=> {"$not" => REGEX_HTTP}} ] }
+		    	single_ticker = {"$and" => [{:category => REGEX_COMPANY}, {:category => {"$not" => /chart/i}},
+                                         {:address => {"$not" => /\s+/}}, {:address=> {"$not" => REGEX_HTTP}} ] }
 		    	#options.merge!({"$or" => [{:category => REGEX_COMPANY}, single_ticker ]})
                         options.merge!(single_ticker)
 		    	#options.merge!({:address=> {"$not" => REGEX_HTTP}, :category => {"$not" => /chart/i} })
