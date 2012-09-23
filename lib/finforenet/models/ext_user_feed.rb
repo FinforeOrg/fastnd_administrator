@@ -16,12 +16,12 @@ module Finforenet
       private
         def after_creation
           user, source = update_feed_info_score(1)
-          user.follow(source) if source && !user.followee_of?(source)
+          user.follow(source) if source && !user.follower_of?(source)
         end
 
         def after_deletion
           user, source = update_feed_info_score(-1)
-          user.unfollow(source) if source && user.followee_of?(source)
+          user.unfollow(source) if source && user.follower_of?(source)
         end
 
         def update_feed_info_score(score)

@@ -128,7 +128,7 @@ module Finforenet
          return counter
        end
 
-       def autopopulate_company(path="")
+       def self.autopopulate_company(path="")
           header = {:country => 0, :sector => 1, :profession => 2, :companies => 3}
           path = "#{Rails.root}/fastnd_extended.csv" if path.blank?
           csv_file = File.new(path).read

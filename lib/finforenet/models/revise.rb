@@ -9,6 +9,9 @@ module Finforenet
         end
       end
 
+      def self.update_feed_info_follower_by_user_company
+      end
+
     end
   end
 end
