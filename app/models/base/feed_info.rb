@@ -6,8 +6,7 @@ class Base::FeedInfo
 	#Fields
 	field :title,       :type => String 
 	field :address,     :type => String 
-	field :category,    :type => String 
-	field :follower,    :type => Integer, :default => 0 
+	field :category,    :type => String
 	field :image,       :type => String 
 	field :description, :type => String
 

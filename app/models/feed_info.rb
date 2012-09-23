@@ -1,4 +1,6 @@
 class FeedInfo < Base::FeedInfo  
+  include Finforenet::Models::ExtFeedInfo
+
   field :is_populate, :type => Boolean, :default => false
   field :position,    :type => Integer
   index :is_populate
@@ -55,10 +57,6 @@ class FeedInfo < Base::FeedInfo
       row << pc.profiles.where(:_id.in => profile_ids).map(&:title).join(",")
     end
     row
-  end
-
-  def profiles
-    Profile.find(self.feed_info_profiles.map(&:profile_id))
   end
 
   def validate_rss

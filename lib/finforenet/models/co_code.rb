@@ -127,6 +127,39 @@ module Finforenet
          end
          return counter
        end
+
+       def autopopulate_company(path="")
+          header = {:country => 0, :sector => 1, :profession => 2, :companies => 3}
+          path = "#{Rails.root}/fastnd_extended.csv" if path.blank?
+          csv_file = File.new(path).read
+          csv_data = CSV.parse(csv_file)
+          counter = {:record => 0, :found => 0, :not_found => 0, :not_found_data => []}
+          csv_data.shift if csv_data.first[0] =~ /country|companies/i
+          csv_data.each do |row|
+            companies = row[header[:companies]]
+            companies = (companies =~ /\,/) ? companies.split(/\,/) : companies.split(/\s/)
+            # sanitize array element from unnecessary white spaces
+            companies = companies.map{|company| company.gsub(/^\s|\s$/,"").gsub(/\s{2,}/," ")}
+            profile_titles = row[header[:industry]].split(",") + row[header[:geography]].split(",") + row[header[:profession]].split(",")
+            profile_titles = profile_titles.map{|profile| profile.gsub(/^\s|\s$/,"")}.compact.uniq
+            profiles = Profile.any_in(:title => profile_titles)
+            companies.each do |company|
+              feed_info = FeedInfo.where({address: company}).first
+              if feed_info
+                feed_info.update_attribute(:is_populate, true) unless feed_info.is_populate
+                profiles.each do |profile|
+                  FeedInfo::Profile.find_or_create_by({profile_id: profile.id, feed_info_id: feed_info.id})
+                end
+                counter[:found] += 1
+              elsif !counter[:not_found_data].include?(company)
+                counter[:not_found] += 1
+                counter[:not_found_data].push(company)
+              end
+              counter[:record] += 1
+            end
+          end
+          return counter
+       end
        
     end
   end

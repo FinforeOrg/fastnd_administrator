@@ -12,9 +12,9 @@
 #                                     address: "http://rss.asianmarket.net/exchanges.rss"
 #                                     category: "rss"}
 #             }
-
 class UserFeed
   include Mongoid::Document
+  include Finforenet::Models::ExtUserFeed
   
   field :title, :type => String
   index :title
@@ -38,14 +38,6 @@ class UserFeed
     @feed_info_attributes
   end
   
-  def before_destroy
-    self.feed_info.inc(:follower, -1) if self.feed_info
-  end
-  
-  def after_create
-    self.feed_info.inc(:follower, 1)
-  end
-  
   def feedinfo
     return self.custom_feed_info if self.custom_feed_info.present?
     self.feed_info
@@ -62,5 +54,4 @@ class UserFeed
       end if fi.present?
     end
   end
-
 end

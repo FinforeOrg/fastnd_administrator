@@ -31,6 +31,8 @@ gem 'jquery-rails'
 gem 'yajl-ruby'
 gem 'nokogiri', '>= 1.5.0'
 gem 'profanity_filter'
+gem 'mongoid_voteable'
+gem 'mongoid_followable', "~> 0.1.9"
 
 # Background Job & Queue
 gem 'resque'

@@ -24,11 +24,12 @@ module Finforenet
 		    end
 		    
 		    def company_query(options={})
-		    	single_ticker = {"$and" => [{:category => REGEX_COMPANY}, {:category => {"$not" => /chart/i}},
-                                         {:address => {"$not" => /\s+/}}, {:address=> {"$not" => REGEX_HTTP}} ] }
-		    	#options.merge!({"$or" => [{:category => REGEX_COMPANY}, single_ticker ]})
-                        options.merge!(single_ticker)
-		    	#options.merge!({:address=> {"$not" => REGEX_HTTP}, :category => {"$not" => /chart/i} })
+		    	single_ticker = {"$and" => [
+                                      {:category => REGEX_COMPANY},     {:category => {"$not" => /chart/i}},
+                                      {:address  => {"$not" => /\s+/}}, {:address  => {"$not" => REGEX_HTTP}} 
+                                     ] 
+                          }
+          options.merge!(single_ticker)
 		    	return options
 		    end
 		    
@@ -53,36 +54,39 @@ module Finforenet
 		    	return options
 		    end
 
-                   def sectors_query(profile_ids, options = {})
-                        feed_info_ids = FeedInfo::Profile.where(:profile_id.in => profile_ids).map(&:feed_info_id)
-                        options[:_id] = {"$in" => feed_info_ids} unless feed_info_ids.size < 1
-                        return options
-                    end
+       def sectors_query(profile_ids, options = {})
+            feed_info_ids = FeedInfo::Profile.where(:profile_id.in => profile_ids).map(&:feed_info_id)
+            options[:_id] = {"$in" => feed_info_ids} unless feed_info_ids.size < 1
+            return options
+        end
 		    
 		    def podcast_query(options={})
 		    	options.merge!({:category => /podcast/i, 
-			    	             "$and" => [{:address => REGEX_HTTP}, 
+			    	             "$and" => [
+                                    {:address => REGEX_HTTP}, 
 				    	                      {:address => {"$not" => /youtube/i}}
 				    	                     ]
 				    	          })
 		    	return options
 		    end
 
-                    def broadcast_query(options={})
-                        options.merge!({:category => /video|youtube|broadcast/i,
-                                             "$and" => [{:address => REGEX_HTTP},
-                                                              {:address => /youtube/i}
-                                                             ]
-                                                  })
-                        return options
-                    end
+        def broadcast_query(options={})
+          options.merge!({:category => /video|youtube|broadcast/i,
+                          "$and" => [
+                                      {:address => REGEX_HTTP},
+                                      {:address => /youtube/i}
+                                    ]
+                        })
+          return options
+        end
 		    
 		    def chart_query(options={})
 		    	options.merge!({:category => /chart|price/i, :title => /\w|\W/i})
-		    end  
-                    def price_query(options={})
-                      chart_query(options)
-                    end
+		    end
+
+        def price_query(options={})
+          chart_query(options)
+        end
       end
       
     end

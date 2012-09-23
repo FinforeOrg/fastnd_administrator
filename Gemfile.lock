@@ -175,6 +175,10 @@ GEM
       activemodel (~> 3.1)
       mongo (~> 1.3)
       tzinfo (~> 0.3.22)
+    mongoid_followable (0.1.9)
+    mongoid_voteable (0.1.1)
+      activesupport (>= 3.0.0.rc)
+      mongoid (>= 2.0.0.beta.16)
     multi_json (1.0.4)
     multi_xml (0.5.1)
     multipart-post (1.1.5)
@@ -362,6 +366,8 @@ DEPENDENCIES
   linkedin (= 0.3.6)
   mongoid (= 2.4.7)
   mongoid-rspec!
+  mongoid_followable (~> 0.1.9)
+  mongoid_voteable
   newrelic_rpm
   nokogiri (>= 1.5.0)
   oauth

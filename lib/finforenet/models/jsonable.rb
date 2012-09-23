@@ -4,9 +4,9 @@ module Finforenet
 	  
 	  extend ActiveSupport::Concern
 	  
-	  included do
-		  include InstancesMethods
-	  end
+	    included do
+		    include InstancesMethods
+	    end
 	
 	  module InstancesMethods
 
