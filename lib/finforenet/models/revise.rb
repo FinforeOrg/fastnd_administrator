@@ -10,6 +10,10 @@ module Finforenet
       end
 
       def self.update_feed_info_follower_by_user_company
+        user_companies = UserCompanyTab.all
+        user_companies.each do |user_company|
+          user_company.send(:after_creation)
+        end
       end
 
     end
