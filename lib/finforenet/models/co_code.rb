@@ -134,23 +134,26 @@ module Finforenet
           csv_file = File.new(path).read
           csv_data = CSV.parse(csv_file)
           counter = {:record => 0, :found => 0, :not_found => 0, :not_found_data => []}
-          csv_data.shift if csv_data.first[0] =~ /country|companies/i
+          csv_data.shift if csv_data.first[0] =~ /country|profession/i
           csv_data.each do |row|
             companies = row[header[:companies]]
+            next if companies.blank?
             companies = (companies =~ /\,/) ? companies.split(/\,/) : companies.split(/\s/)
             # sanitize array element from unnecessary white spaces
             companies = companies.map{|company| company.gsub(/^\s|\s$/,"").gsub(/\s{2,}/," ")}
-            profile_titles = row[header[:industry]].split(",") + row[header[:geography]].split(",") + row[header[:profession]].split(",")
+            profile_titles = row[header[:country]].split(",") + row[header[:sector]].split(",") + row[header[:profession]].split(",")
             profile_titles = profile_titles.map{|profile| profile.gsub(/^\s|\s$/,"")}.compact.uniq
             profiles = Profile.any_in(:title => profile_titles)
             companies.each do |company|
-              feed_info = FeedInfo.where({address: company}).first
-              if feed_info
-                feed_info.update_attribute(:is_populate, true) unless feed_info.is_populate
+              company_ticker = CompanyCompetitor.where({company_ticker: company}).first
+              if company_ticker && feed_info = company_ticker.feed_info
                 profiles.each do |profile|
                   FeedInfo::Profile.find_or_create_by({profile_id: profile.id, feed_info_id: feed_info.id})
                 end
-                counter[:found] += 1
+                unless feed_info.is_populate
+                  feed_info.update_attribute(:is_populate, true) 
+                  counter[:found] += 1
+                end
               elsif !counter[:not_found_data].include?(company)
                 counter[:not_found] += 1
                 counter[:not_found_data].push(company)
@@ -158,6 +161,7 @@ module Finforenet
               counter[:record] += 1
             end
           end
+          #{:record=>20966, :found=>20954, :not_found=>5, :not_found_data=>["TPE:2837", "TPE:2208", "TPE:4104", "NSE:STER", "NYSE:AWH"]}
           return counter
        end
        

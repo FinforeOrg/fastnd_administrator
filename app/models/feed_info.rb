@@ -1,8 +1,9 @@
 class FeedInfo < Base::FeedInfo  
   include Finforenet::Models::ExtFeedInfo
 
-  field :is_populate, :type => Boolean, :default => false
-  field :position,    :type => Integer
+  field :is_populate,  :type => Boolean, :default => false
+  field :position,     :type => Integer
+  field :_profile_ids, :type => Array
   index :is_populate
   index :position
 
@@ -128,6 +129,7 @@ class FeedInfo < Base::FeedInfo
     if self.valid? && self.profile_ids.present? && self.profile_ids.count > 0
       self.feed_info_profiles.delete_all 
       self.profile_ids.map{|pi| FeedInfo::Profile.create({:feed_info_id => self.id, :profile_id => pi })}
+      self._profile_ids = self.feed_info_profiles.map(&:profile_id)
     end
     if self.valid? && self.position.blank?
       lastest = self.class.where(:category => /#{self.category}/i).desc(:position).first

@@ -1,9 +1,6 @@
 class User
   include Mongoid::Document
   include Mongoid::Timestamps
-  include Finforenet::Models::Authenticable
-  include Finforenet::Models::SharedQuery
-  include Finforenet::Models::Jsonable
   include Finforenet::Models::ExtUser
    
   field :email_work,            :type => String
@@ -11,6 +8,7 @@ class User
   field :full_name,             :type => String
   field :is_online,             :type => Boolean, :default => false
   field :is_public,             :type => Boolean, :default => false
+  field :_profile_ids,          :type => Array
 
   index :email_work
   index :login
@@ -190,6 +188,7 @@ class User
       pids.each do |pid|
         User::Profile.create({:profile_id => pid, :user_id => self.id})
       end
+      self._profile_ids = self.user_profiles.map(&:profile_id)
     end
   end
 
