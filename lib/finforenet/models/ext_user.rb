@@ -54,7 +54,20 @@ module Finforenet
           company_profiles = company.feed_info_profiles.map(&:profile_id)
           diff_match = user_profiles - company_profiles
           tmp_match = user_profiles.count - diff_match
-          matches.push(company) if tmp_match > total_match
+          if tmp_match > total_match
+            if matches.count < 5
+              matches.push({company: company, score: company.votes, total_match: tmp_match}) 
+            else
+              sorted = matches.sort_by{|element| [element[:total_match], element[:score]]}
+              element = sorted.first
+              next if element[:total_match] > tmp_match && element[:score] > company.votes
+              if tmp_match > element[:total_match] || company.votes > element[:score]
+                sorted.shift
+                sorted.unshift({company: company, score: company.votes, total_match: tmp_match})
+                matches = sorted
+              end
+            end
+          end
         end
          
         

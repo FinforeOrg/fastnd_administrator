@@ -127,8 +127,39 @@ module Finforenet
          end
          return counter
        end
-
-       def self.autopopulate_company(path="")
+       
+       def self.async_populate_company
+         header = {:country => 0, :sector => 1, :profession => 2, :companies => 3}
+         path = "#{Rails.root}/fastnd_extended.csv" if path.blank?
+         csv_file = File.new(path).read
+         csv_data = CSV.parse(csv_file)
+         counter = {:record => 0, :found => 0, :not_found => 0, :not_found_data => []}
+         csv_data.shift if csv_data.first[0] =~ /country|profession/i
+         csv_data.each do |row|
+           country_profiles    = Profile.any_in(title: self.sanitize_array(row[header[:country]].split(","))).map(&:id)
+           sector_profiles     = Profile.any_in(title: self.sanitize_array(row[header[:sector]].split(","))).map(&:id)
+           profession_profiles = Profile.any_in(title: self.sanitize_array(row[header[:profession]].split(","))).map(&:id)
+           all_profiles = country_profiles + sector_profiles + profession_profiles
+           sources   = []
+           companies = companies.map{|company| company.gsub(/^\s|\s$/,"").gsub(/\s{2,}/," ")}
+           companies.each do |company|
+             company_ticker = CompanyCompetitor.where({company_ticker: company}).first
+             if company_ticker
+               feed_info = company_ticker.feed_info
+               sources.push(feed_info.id)
+             end
+           end
+           SourcePopulation.create({profession_ids: profession_profiles,
+                                    country_ids: country_profiles, 
+                                    sector_ids: sector_profiles,
+                                    profile_ids: all_profiles,
+                                    category: "company",
+                                    sources: sources
+                                  })
+         end
+       end
+      
+       def self.sync_populate_company(path="")
           header = {:country => 0, :sector => 1, :profession => 2, :companies => 3}
           path = "#{Rails.root}/fastnd_extended.csv" if path.blank?
           csv_file = File.new(path).read
@@ -163,6 +194,12 @@ module Finforenet
           end
           #{:record=>20966, :found=>20954, :not_found=>5, :not_found_data=>["TPE:2837", "TPE:2208", "TPE:4104", "NSE:STER", "NYSE:AWH"]}
           return counter
+       end
+
+       private
+
+       def self.sanitize_array(arr)
+         arr.map{|profile| profile.gsub(/^\s|\s$/,"")}
        end
        
     end
