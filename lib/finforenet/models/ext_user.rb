@@ -44,40 +44,30 @@ module Finforenet
       end
 
       def populate_company_tabs
-        options = FeedInfo.populated_query(FeedInfo.all_companies_query)
-        companies = FeedInfo.where(options).desc(:votes)
-        total_match = 0
-        matches = []
-        user_profiles = self.user_profiles.map(&:profile_id)
-        companies.each do |company|
-          next if company.company_competitor.blank?
-          company_profiles = company.feed_info_profiles.map(&:profile_id)
-          diff_match = user_profiles - company_profiles
-          tmp_match = user_profiles.count - diff_match
-          if tmp_match > total_match
-            if matches.count < 5
-              matches.push({company: company, score: company.votes, total_match: tmp_match}) 
-            else
-              sorted = matches.sort_by{|element| [element[:total_match], element[:score]]}
-              element = sorted.first
-              next if element[:total_match] > tmp_match && element[:score] > company.votes
-              if tmp_match > element[:total_match] || company.votes > element[:score]
-                sorted.shift
-                sorted.unshift({company: company, score: company.votes, total_match: tmp_match})
-                matches = sorted
-              end
+        current_profile_ids = self.user_profiles.map(&:profile_id)
+        countries, sectors, professions = [], [], []
+        current_profile_ids.each do |profile_id|
+          profile = Profile.find(profile_id)
+          if profile
+            if profile.profile_category.title =~ /geo/i
+              countries.push(profile_id)
+            elsif profile.profile_category.title =~ /ind/i
+              sectors.push(profile_id)
+            elsif profile.profile_category.title =~ /pro/i
+              professions.push(profile_id)
             end
           end
         end
-         
-        
-        # tab_infos = FeedInfo.search_populates(options,true)
-      
-        #  tab_infos.each do |company_tab|
-        #     self.user_company_tabs << UserCompanyTab.new({:follower => 100, :is_aggregate => false, :feed_info_id => company_tab.id})
-        #  end
-         
-        #  self.save
+        populations = SourcePopulation.where({category: "company", 
+                                              :country_ids.in => countries, 
+                                              :sector_ids.in => sectors, 
+                                              :profession_ids.in => professions
+                                            })
+        source_ids = populations.map{|population| population.sources}.flatten.compact.uniq
+        results = FeedInfo.where({:_id.in => source_ids}).desc(:votes).limit(5)
+        results.each do |result|
+          self.user_company_tabs.find_or_create_by({follower: 100, is_aggregate: false, feed_info_id: result.id})
+        end
       end
 
     end

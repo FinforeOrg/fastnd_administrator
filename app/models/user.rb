@@ -69,7 +69,7 @@ class User
   end
 
   def profiles
-    Profile.find(self.user_profiles.map(&:profile_ids))
+    Profile.find(self.user_profiles.map(&:profile_id))
   end
 
   def profession

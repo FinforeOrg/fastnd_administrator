@@ -8,6 +8,7 @@ FeedInfo.all.each do |info|
   info.save
 end
 
+#SAMPLE synchronous POPULATION
 x = Time.now
 user = User.where(email_work: /yacobus/i).first
 options = FeedInfo.populated_query(FeedInfo.all_companies_query)
@@ -21,7 +22,7 @@ companies.each do |company|
   company_profiles = company.feed_info_profiles.map(&:profile_id)
   diff_match = user_profiles - company_profiles
   tmp_match = user_profiles.count - diff_match.count
-  if tmp_match > total_match
+  if tmp_match > 0
     if matches.count < 6
       total_match = tmp_match
       matches.push({company: company, score: company.votes, total_match: tmp_match}) 
@@ -38,7 +39,37 @@ companies.each do |company|
     end
   end
 end
-results = matches.slice(-5,5)
+results = matches.slice(0,5)
 y = Time.now
 results.map{|r| [{score: r[:score], tota: r[:total_match]}]}
 y-x
+
+#SAMPLE asynchronous POPULATION
+x = Time.now
+user = User.where(email_work: /yacobus/i).first
+user_profiles = user.user_profiles.map(&:profile_id)
+countries = []
+sectors = []
+professions = []
+user_profiles.each do |user_profile|
+  profile = Profile.find(user_profile)
+  if profile
+    if profile.profile_category.title =~ /geo/i
+      countries.push(user_profile)
+    elsif profile.profile_category.title =~ /ind/i
+      sectors.push(user_profile)
+    elsif profile.profile_category.title =~ /pro/i
+      professions.push(user_profile)
+    end
+  end
+end
+populations = SourcePopulation.where({category: "company", :country_ids.in => countries, :sector_ids.in => sectors, :profession_ids.in => professions})
+source_ids = populations.map{|population| population.sources}.flatten.compact.uniq
+results = FeedInfo.where({:_id.in => source_ids}).desc(:votes).limit(5)
+y = Time.now
+y-x
+
+
+
+
+

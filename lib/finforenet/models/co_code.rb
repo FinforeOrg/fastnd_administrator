@@ -130,18 +130,21 @@ module Finforenet
        
        def self.async_populate_company
          header = {:country => 0, :sector => 1, :profession => 2, :companies => 3}
-         path = "#{Rails.root}/fastnd_extended.csv" if path.blank?
+         path = "#{Rails.root}/autopopulate_company.csv" if path.blank?
          csv_file = File.new(path).read
          csv_data = CSV.parse(csv_file)
          counter = {:record => 0, :found => 0, :not_found => 0, :not_found_data => []}
          csv_data.shift if csv_data.first[0] =~ /country|profession/i
          csv_data.each do |row|
+           companies = row[header[:companies]]
+           next if companies.blank?
            country_profiles    = Profile.any_in(title: self.sanitize_array(row[header[:country]].split(","))).map(&:id)
            sector_profiles     = Profile.any_in(title: self.sanitize_array(row[header[:sector]].split(","))).map(&:id)
            profession_profiles = Profile.any_in(title: self.sanitize_array(row[header[:profession]].split(","))).map(&:id)
            all_profiles = country_profiles + sector_profiles + profession_profiles
            sources   = []
-           companies = companies.map{|company| company.gsub(/^\s|\s$/,"").gsub(/\s{2,}/," ")}
+           companies = (companies =~ /\,/) ? companies.split(/\,/) : companies.split(/\s/)
+           companies = self.sanitize_array(companies)
            companies.each do |company|
              company_ticker = CompanyCompetitor.where({company_ticker: company}).first
              if company_ticker
@@ -161,7 +164,7 @@ module Finforenet
       
        def self.sync_populate_company(path="")
           header = {:country => 0, :sector => 1, :profession => 2, :companies => 3}
-          path = "#{Rails.root}/fastnd_extended.csv" if path.blank?
+          path = "#{Rails.root}/autopopulate_company.csv" if path.blank?
           csv_file = File.new(path).read
           csv_data = CSV.parse(csv_file)
           counter = {:record => 0, :found => 0, :not_found => 0, :not_found_data => []}
@@ -171,7 +174,7 @@ module Finforenet
             next if companies.blank?
             companies = (companies =~ /\,/) ? companies.split(/\,/) : companies.split(/\s/)
             # sanitize array element from unnecessary white spaces
-            companies = companies.map{|company| company.gsub(/^\s|\s$/,"").gsub(/\s{2,}/," ")}
+            companies = self.sanitize_array(companies)
             profile_titles = row[header[:country]].split(",") + row[header[:sector]].split(",") + row[header[:profession]].split(",")
             profile_titles = profile_titles.map{|profile| profile.gsub(/^\s|\s$/,"")}.compact.uniq
             profiles = Profile.any_in(:title => profile_titles)
@@ -192,14 +195,14 @@ module Finforenet
               counter[:record] += 1
             end
           end
-          #{:record=>20966, :found=>20954, :not_found=>5, :not_found_data=>["TPE:2837", "TPE:2208", "TPE:4104", "NSE:STER", "NYSE:AWH"]}
+          #{:record=>898, :found=>540, :not_found=>5, :not_found_data=>["", "NSE:STER", "LON:BLY", "TYO:9715", "TPE:4104"]}
           return counter
        end
 
        private
 
        def self.sanitize_array(arr)
-         arr.map{|profile| profile.gsub(/^\s|\s$/,"")}
+         arr.map{|profile| profile.gsub(/^\s|\s$/,"").gsub(/\s{2,}/," ")}
        end
        
     end
