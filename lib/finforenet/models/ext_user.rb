@@ -40,13 +40,10 @@ module Finforenet
         #  self.save
       
          #create populate for company tabs
-         populate_company_tabs
-      end
-
-      def populate_company_tabs
         current_profile_ids = self.user_profiles.map(&:profile_id)
         countries, sectors, professions = [], [], []
         current_profile_ids.each do |profile_id|
+          next if profile_id.blank?
           profile = Profile.find(profile_id)
           if profile
             if profile.profile_category.title =~ /geo/i
@@ -58,16 +55,38 @@ module Finforenet
             end
           end
         end
+
+         populate_company_tabs(countries, sectors, professions)
+         populate_prices(countries, sectors, professions)
+      end
+
+      def populate_prices(countries, sectors, professions)
+        results = populated_resources(countries, sectors, professions, "price")
+        results.each do |result|
+          self.feed_accounts.create({name: result.title, 
+                                     category: "Price",
+                                      user_feeds_attributes: [
+                                        {title: result.title, feed_info_id: result.id}
+                                      ]
+                                    })
+        end
+      end
+
+      def populate_company_tabs(countries, sectors, professions)
+        results = populated_resources(countries, sectors, professions, "company")
+        results.each do |result|
+          self.user_company_tabs.find_or_create_by({follower: 100, is_aggregate: false, feed_info_id: result.id})
+        end
+      end
+
+      def populated_resources(countries, sectors, professions, category)
         populations = SourcePopulation.where({category: "company", 
                                               :country_ids.in => countries, 
                                               :sector_ids.in => sectors, 
                                               :profession_ids.in => professions
                                             })
         source_ids = populations.map{|population| population.sources}.flatten.compact.uniq
-        results = FeedInfo.where({:_id.in => source_ids}).desc(:votes).limit(5)
-        results.each do |result|
-          self.user_company_tabs.find_or_create_by({follower: 100, is_aggregate: false, feed_info_id: result.id})
-        end
+        FeedInfo.where({:_id.in => source_ids}).desc(:votes).limit(5)
       end
 
     end

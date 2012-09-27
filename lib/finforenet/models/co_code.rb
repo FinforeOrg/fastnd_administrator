@@ -127,6 +127,39 @@ module Finforenet
          end
          return counter
        end
+
+       def self.async_populate_price
+         header = {:id => 0, :title => 1, :category => 2, :address => 3, :industry => 4, :geography => 5, :profession => 6}
+         path = "#{Rails.root}/autopopulate_price.csv" if path.blank?
+         csv_file = File.new(path).read
+         csv_data = CSV.parse(csv_file)
+         counter = {:record => 0, :found => 0, :not_found => 0, :not_found_data => []}
+         csv_data.shift if csv_data.first[0] =~ /ID/i
+         csv_data.each do |row|
+           next unless row[header[:id]]
+
+           country_profiles    = Profile.any_in(title: self.sanitize_array(row[header[:geography]].split(","))).map(&:id)
+           sector_profiles     = Profile.any_in(title: self.sanitize_array(row[header[:industry]].split(","))).map(&:id)
+           profession_profiles = Profile.any_in(title: self.sanitize_array(row[header[:profession]].split(","))).map(&:id)
+           all_profiles = country_profiles + sector_profiles + profession_profiles
+
+           feed_info = FeedInfo.find(row[header[:id]])
+           next unless feed_info
+
+           feed_info.update_attributes({title: row[header[:title]],
+                                        address: row[header[:address]],
+                                        profile_ids: all_profiles
+                                      })
+           
+           SourcePopulation.create({profession_ids: profession_profiles,
+                                    country_ids: country_profiles, 
+                                    sector_ids: sector_profiles,
+                                    profile_ids: all_profiles,
+                                    category: "price",
+                                    sources: [feed_info.id]
+                                  })
+         end
+       end
        
        def self.async_populate_company
          header = {:country => 0, :sector => 1, :profession => 2, :companies => 3}
