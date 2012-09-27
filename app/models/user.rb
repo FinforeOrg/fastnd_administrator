@@ -9,6 +9,7 @@ class User
   field :is_online,             :type => Boolean, :default => false
   field :is_public,             :type => Boolean, :default => false
   field :_profile_ids,          :type => Array
+  field :has_populated,         :type => Boolean, :default => false
 
   index :email_work
   index :login

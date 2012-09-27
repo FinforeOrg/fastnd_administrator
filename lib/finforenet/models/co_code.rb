@@ -136,6 +136,7 @@ module Finforenet
          counter = {:record => 0, :found => 0, :not_found => 0, :not_found_data => []}
          csv_data.shift if csv_data.first[0] =~ /ID/i
          csv_data.each do |row|
+           counter[:record] += 1
            next unless row[header[:id]]
 
            country_profiles    = Profile.any_in(title: self.sanitize_array(row[header[:geography]].split(","))).map(&:id)
@@ -158,6 +159,7 @@ module Finforenet
                                     category: "price",
                                     sources: [feed_info.id]
                                   })
+           counter[:found] += 1
          end
        end
        
