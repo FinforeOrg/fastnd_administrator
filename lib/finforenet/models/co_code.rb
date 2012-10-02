@@ -128,6 +128,56 @@ module Finforenet
          return counter
        end
 
+       def self.async_populate_podcast
+         header = {:id => 0, :title => 1, :category => 2, :address => 3, :autopopulate => 4, :industry => 5, :geography => 6, :profession => 7}
+         path = "#{Rails.root}/autopopulate_podcast.csv" if path.blank?
+         csv_file = File.new(path).read
+         csv_data = CSV.parse(csv_file)
+         counter = {:record => 0, :found => 0, :not_found => 0, :not_found_data => []}
+         csv_data.shift if csv_data.first[0] =~ /ID/i
+         csv_data.each do |row|
+           counter[:record] += 1
+           next unless row[header[:id]]
+
+           feed_info = FeedInfo.find(row[header[:id]])
+           next unless feed_info
+
+           countries, sectors, professions = [], [], []
+           feed_info.selected_profiles.each do |profile_id|
+             next if profile_id.blank?
+             profile = Profile.find(profile_id)
+             if profile
+               if profile.profile_category.title =~ /geo/i
+                 countries.push(profile_id)
+               elsif profile.profile_category.title =~ /ind/i
+                 sectors.push(profile_id)
+               elsif profile.profile_category.title =~ /pro/i
+                 professions.push(profile_id)
+               end
+             end
+           end
+
+           country_profiles    = row[header[:geography].blank? ? countries : Profile.any_in(title: self.sanitize_array(row[header[:geography]].split(","))).map(&:id)
+           sector_profiles     = row[header[:industry].blank? ? sectors : Profile.any_in(title: self.sanitize_array(row[header[:industry]].split(","))).map(&:id)
+           profession_profiles = row[header[:profession].blank? ? professions : Profile.any_in(title: self.sanitize_array(row[header[:profession]].split(","))).map(&:id)
+           all_profiles = country_profiles + sector_profiles + profession_profiles
+
+           feed_info.update_attributes({title: row[header[:title]],
+                                        address: row[header[:address]],
+                                        profile_ids: all_profiles
+                                      })
+           
+           SourcePopulation.create({profession_ids: profession_profiles,
+                                    country_ids: country_profiles, 
+                                    sector_ids: sector_profiles,
+                                    profile_ids: all_profiles,
+                                    category: "podcast",
+                                    sources: [feed_info.id]
+                                  }) if row[header[:autopopulate]].to_s =~ /yes/i
+           counter[:found] += 1
+         end
+       end
+
        def self.async_populate_price
          header = {:id => 0, :title => 1, :category => 2, :address => 3, :industry => 4, :geography => 5, :profession => 6}
          path = "#{Rails.root}/autopopulate_price.csv" if path.blank?

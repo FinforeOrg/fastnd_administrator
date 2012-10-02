@@ -58,10 +58,11 @@ module Finforenet
 
          populate_company_tabs(countries, sectors, professions)
          populate_prices(countries, sectors, professions)
+         populate_podcast(countries, sectors, professions)
       end
 
       def populate_prices(countries, sectors, professions)
-        results = populated_resources(countries, sectors, professions, "price")
+        results = populated_resources(countries, sectors, professions, "price", 3)
         results.each do |result|
           self.feed_accounts.create({name: result.title, 
                                      category: "Price",
@@ -72,21 +73,33 @@ module Finforenet
         end
       end
 
+      def populate_podcast(countries, sectors, professions)
+        results = populated_resources(countries, sectors, professions, "podcast", 1)
+        results.each do |result|
+          self.feed_accounts.create({name: result.title, 
+                                     category: "Podcast",
+                                      user_feeds_attributes: [
+                                        {title: result.title, feed_info_id: result.id}
+                                      ]
+                                    })
+        end
+      end
+
       def populate_company_tabs(countries, sectors, professions)
-        results = populated_resources(countries, sectors, professions, "company")
+        results = populated_resources(countries, sectors, professions, "company", 5)
         results.each do |result|
           self.user_company_tabs.find_or_create_by({follower: 100, is_aggregate: false, feed_info_id: result.id})
         end
       end
 
-      def populated_resources(countries, sectors, professions, category)
-        populations = SourcePopulation.where({category: "company", 
+      def populated_resources(countries, sectors, professions, category, limit)
+        populations = SourcePopulation.where({category: category, 
                                               :country_ids.in => countries, 
                                               :sector_ids.in => sectors, 
                                               :profession_ids.in => professions
                                             })
         source_ids = populations.map{|population| population.sources}.flatten.compact.uniq
-        FeedInfo.where({:_id.in => source_ids}).desc(:votes).limit(5)
+        FeedInfo.where({:_id.in => source_ids}).desc(:votes).limit(limit)
       end
 
     end
