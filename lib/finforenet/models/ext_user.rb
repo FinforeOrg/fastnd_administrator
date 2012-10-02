@@ -59,6 +59,7 @@ module Finforenet
          populate_company_tabs(countries, sectors, professions)
          populate_prices(countries, sectors, professions)
          populate_podcast(countries, sectors, professions)
+         self.update_attribute(:has_populated, true)
       end
 
       def populate_prices(countries, sectors, professions)
