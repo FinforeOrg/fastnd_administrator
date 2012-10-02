@@ -157,9 +157,9 @@ module Finforenet
              end
            end
 
-           country_profiles    = row[header[:geography].blank? ? countries : Profile.any_in(title: self.sanitize_array(row[header[:geography]].split(","))).map(&:id)
-           sector_profiles     = row[header[:industry].blank? ? sectors : Profile.any_in(title: self.sanitize_array(row[header[:industry]].split(","))).map(&:id)
-           profession_profiles = row[header[:profession].blank? ? professions : Profile.any_in(title: self.sanitize_array(row[header[:profession]].split(","))).map(&:id)
+           country_profiles    = row[header[:geography]].blank? ? countries : Profile.any_in(title: self.sanitize_array(row[header[:geography]].split(","))).map(&:id)
+           sector_profiles     = row[header[:industry]].blank? ? sectors : Profile.any_in(title: self.sanitize_array(row[header[:industry]].split(","))).map(&:id)
+           profession_profiles = row[header[:profession]].blank? ? professions : Profile.any_in(title: self.sanitize_array(row[header[:profession]].split(","))).map(&:id)
            all_profiles = country_profiles + sector_profiles + profession_profiles
 
            feed_info.update_attributes({title: row[header[:title]],
