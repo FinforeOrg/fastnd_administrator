@@ -66,7 +66,7 @@ module Finforenet
         results = populated_resources(countries, sectors, professions, "price", 3)
         results.each do |result|
           self.feed_accounts.create({name: result.title, 
-                                     category: "Price",
+                                     category: "chart",
                                       user_feeds_attributes: [
                                         {title: result.title, feed_info_id: result.id}
                                       ]
@@ -78,7 +78,7 @@ module Finforenet
         results = populated_resources(countries, sectors, professions, "podcast", 1)
         results.each do |result|
           self.feed_accounts.create({name: result.title, 
-                                     category: "Podcast",
+                                     category: "podcast",
                                       user_feeds_attributes: [
                                         {title: result.title, feed_info_id: result.id}
                                       ]
