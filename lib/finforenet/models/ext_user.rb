@@ -75,15 +75,16 @@ module Finforenet
       end
 
       def populate_podcast(countries, sectors, professions)
-        results = populated_resources(countries, sectors, professions, "podcast", 1)
+        results = populated_resources(countries, sectors, professions, "podcast", nil)
+        user_feeds_attributes = []
         results.each do |result|
-          self.feed_accounts.create({name: result.title, 
-                                     category: "podcast",
-                                      user_feeds_attributes: [
-                                        {title: result.title, feed_info_id: result.id}
-                                      ]
-                                    })
+          user_feeds_attributes.push( {title: result.title, feed_info_id: result.id} )
         end
+        self.feed_accounts.create({name: "Podcast Column", 
+                                   category: "podcast",
+                                   user_feeds_attributes: user_feeds_attributes
+                                 })
+        
       end
 
       def populate_company_tabs(countries, sectors, professions)
@@ -100,7 +101,9 @@ module Finforenet
                                               :profession_ids.in => professions
                                             })
         source_ids = populations.map{|population| population.sources}.flatten.compact.uniq
-        FeedInfo.where({:_id.in => source_ids}).desc(:votes).limit(limit)
+        result = FeedInfo.where({:_id.in => source_ids}).desc(:votes).limit(limit)
+        return result unless limit
+        result.limit(limit)
       end
 
     end
