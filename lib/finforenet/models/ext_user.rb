@@ -19,27 +19,6 @@ module Finforenet
       end
 
       def create_autopopulate
-        # ON HOLD
-        # ['rss', 'podcast', 'chart'].each do |column|
-        #    options = FeedInfo.send("#{column}_query")
-        #    options = FeedInfo.populated_query(options).merge!(profiles_query(self))   
-           
-        #    new_column = FeedAccount.new(options) unless column.match(/chart/i)
-        #    feed_infos = FeedInfo.search_populates(options) 
-        #    feed_infos = FeedInfo.with_populated_prices if column == 'chart' && @feed_infos.size < 1
-          
-        #    feed_infos.each do |feed_info|
-        #      new_column = FeedAccount.new(options) if column == 'chart'
-        #      new_column.user_feeds << UserFeed.new({:feed_info_id => feed_info.id, :title => feed_info.title, :category_type => column})
-        #    end
-           
-        #    self.feed_accounts << new_column
-        #    UserMailer.missing_suggestions(self.category).deliver if feed_infos.size < 1
-        #  end
-         
-        #  self.save
-      
-         #create populate for company tabs
         current_profile_ids = self.user_profiles.map(&:profile_id)
         countries, sectors, professions = [], [], []
         current_profile_ids.each do |profile_id|
@@ -57,6 +36,7 @@ module Finforenet
         end
 
          populate_company_tabs(countries, sectors, professions)
+         populate_rss(countries, sectors, professions)
          populate_prices(countries, sectors, professions)
          populate_podcast(countries, sectors, professions)
          self.update_attribute(:has_populated, true)
@@ -72,6 +52,23 @@ module Finforenet
                                       ]
                                     })
         end
+      end
+
+      def populate_rss(countries, sectors, professions)
+        results = populated_resources(countries, sectors, professions, "rss", nil)
+        user_feeds_attributes = []
+        results.each do |result|
+          user_feeds_attributes.push( {title: result.title, feed_info_id: result.id} )
+        end
+        diff = (user_feeds_attributes.count/2).to_i
+        self.feed_accounts.create({name: "Latest News", 
+                                   category: "rss",
+                                   user_feeds_attributes: user_feeds_attributes[0..(diff-1)]
+                                 })
+        self.feed_accounts.create({name: "Latest News", 
+                                   category: "rss",
+                                   user_feeds_attributes: user_feeds_attributes[diff..(user_feeds_attributes.count-1)]
+                                 })
       end
 
       def populate_podcast(countries, sectors, professions)
