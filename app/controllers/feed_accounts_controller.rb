@@ -32,6 +32,7 @@ class FeedAccountsController < ApplicationController
   end
 
   def create
+    params[:feed_account][:category] = params[:feed_account][:category].to_s.downcase.gsub(/price/i,"chart")
     @feed_account = @user.feed_accounts.create(params[:feed_account])
     
     respond_to do |format|
