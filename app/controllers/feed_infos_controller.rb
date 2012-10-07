@@ -42,7 +42,7 @@ class FeedInfosController < ApplicationController
 
   def new
     @feed_info = FeedInfo.new
-    @feed_info.category = "Chart" if params[:category] == "prices"
+    @feed_info.category = "chart" if params[:category] == "prices"
     respond_to do |format|
       format.html { render :layout=> !request.xhr?}
       format.xml  { render :xml => @feed_info }
