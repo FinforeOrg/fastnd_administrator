@@ -128,7 +128,7 @@ class FeedInfo < Base::FeedInfo
   def before_saving
     if self.valid? && self.profile_ids.present? && self.profile_ids.count > 0
       self.feed_info_profiles.delete_all 
-      self.profile_ids.map{|pi| FeedInfo::Profile.create({:feed_info_id => self.id, :profile_id => pi })}
+      self.profile_ids.map{|pi| FeedInfo::Profile.create({:feed_info_id => self.id, :profile_id => pi, :category => self.category, :profile_category_id => get_category_id(pi) })}
       self._profile_ids = self.feed_info_profiles.map(&:profile_id)
     end
     if self.valid? && self.position.blank?
@@ -138,6 +138,12 @@ class FeedInfo < Base::FeedInfo
     if self.isRss? && !self.validate_rss
       self.errors.add(:address, "is not valid or not rss")
     end
+  end
+
+  def get_category_id(profile_id)
+    _profile = Profile.find(profile_id)
+    return nil unless _profile
+    _profile.profile_category_id
   end
 
 end

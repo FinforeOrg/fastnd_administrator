@@ -77,7 +77,7 @@ module Finforenet
         results.each do |result|
           user_feeds_attributes.push( {title: result.title, feed_info_id: result.id} )
         end
-        self.feed_accounts.create({name: "Podcast Column", 
+        self.feed_accounts.create({name: "Podcasts", 
                                    category: "podcast",
                                    user_feeds_attributes: user_feeds_attributes
                                  })
