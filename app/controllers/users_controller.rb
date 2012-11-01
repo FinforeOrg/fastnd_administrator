@@ -152,6 +152,25 @@ class UsersController < ApplicationController
     end
   end
 
+  def sorting_column
+    @user ||= User.find(params[:user_id])
+    if !params[:orders].blank?
+      orders = params[:orders].gsub(/\,$/,"").split(",")
+      counter = 1
+      orders.each do |kc_id|
+        item = @user.feed_accounts.find(kc_id)
+        if item
+          item.update_attributes({:position => counter})
+          counter += 1
+        end
+      end
+    end
+    respond_to do |format|
+      format.html { render :text=> "SUCCESS" }
+      format.xml  { head :ok }
+    end
+  end
+
   private
     def before_render
       @users_selected = true

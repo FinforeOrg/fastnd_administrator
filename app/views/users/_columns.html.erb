@@ -3,12 +3,13 @@
     <li><a class="selected" href="#"><span><span>List</span></span></a></li>
   </ul>
   <a class="update" href="#additional_section" onclick="javascript:load_by_element('/users/<%=@user.id%>/feed_accounts/new',$('#additional_section'))" ><span><span><em>Add New Record</em><strong></strong></span></span></a>
+  <a class="update" href="#form_area" onclick="javascript:update_ordered_table();" ><span><span><em> Save Orders</em><strong></strong></span></span></a>
 </div>
 
   <!--[if !IE]>start table_wrapper<![endif]-->
 <div class="table_wrapper">
   <div class="table_wrapper_inner">
-    <table width="100%" cellspacing="0" cellpadding="0">
+    <table width="100%" cellspacing="0" cellpadding="0" class="orderable_table" path="<%= sorting_column_users_url({:user_id => @user.id}) %>">
       <tbody><tr>
         <th style="width:125px;"><span>Title</span></th>
         <th class="photo"><span>Category</span></th>
@@ -17,7 +18,7 @@
       </tr>
 
     <% @accounts.each do |account| %>
-      <tr class="<%= cycle("first", "second") %> account_<%= account.id %>">
+      <tr class="<%= cycle("first", "second") %> account_<%= account.id %>" id="<%= account.id %>">
         <td style="padding-left:6px" valign="top"><%= account.name %></td>
         <td style="padding-left:6px" valign="top"><img src="<%= category_image(account.category) %>" size="24" height="24"/><%= account.category %></td>
         <td align="center" valign="top" class="feeds_<%= account.id %>"><%= account.user_feeds.count %></td>
@@ -43,3 +44,30 @@
     </tbody></table>
   </div>
 </div>
+
+<script>
+  var orders = "";
+  function update_ordered_table(){
+    orders = orders.replace(/\,$/,'');
+    var _parameters = "&orders="+orders;
+    url = $(".orderable_table").attr('path') + _parameters;
+    $.get(url, function(){
+       alert("Data Ordered Successfully.");
+    });
+    return false;
+  }
+$(document).ready(function(){
+
+  $(".orderable_table").tableDnD({
+    onDragClass: "myDragClass",
+    onDrop: function(table, row) {
+             var rows = table.tBodies[0].rows;
+             orders = "";
+             for (var i=0; i<rows.length; i++) {
+                orders += rows[i].id+",";
+             }
+             orders = orders.replace(/(^\,|\,$)/,"");
+           }
+  });
+});
+</script>

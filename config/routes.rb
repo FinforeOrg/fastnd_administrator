@@ -44,6 +44,7 @@ FinforeAdmin::Application.routes.draw do
       get :count_columns
       get :count_companies
       get :count_focuses
+      get :sorting_column
       get :autocomplete
       post :autocomplete
     end
