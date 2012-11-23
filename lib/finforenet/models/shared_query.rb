@@ -61,12 +61,7 @@ module Finforenet
         end
 		    
 		    def podcast_query(options={})
-		    	options.merge!({:category => /podcast/i, 
-			    	             "$and" => [
-                                    {:address => REGEX_HTTP}, 
-				    	                      {:address => {"$not" => /youtube/i}}
-				    	                     ]
-				    	          })
+		    	options.merge!({:category => /podcast/i, :address => REGEX_HTTP}) 
 		    	return options
 		    end
 
