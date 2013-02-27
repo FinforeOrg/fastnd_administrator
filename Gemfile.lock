@@ -67,9 +67,9 @@ GEM
     awesome_print (1.1.0)
     bourne (1.1.2)
       mocha (= 0.10.5)
-    bson (1.8.1)
-    bson_ext (1.8.1)
-      bson (~> 1.8.1)
+    bson (1.8.2)
+    bson_ext (1.8.2)
+      bson (~> 1.8.2)
     builder (3.0.4)
     capistrano (2.14.2)
       highline
@@ -353,7 +353,6 @@ DEPENDENCIES
   akismetor
   authlogic
   awesome_print
-  bson (= 1.8.1)
   bson_ext
   capistrano
   capybara

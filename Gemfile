@@ -20,7 +20,6 @@ gem 'crack'
 
 #Database
 gem 'mongo', '1.8.1'
-gem 'bson', '1.8.1'
 gem 'mongoid', '2.4.7'
 gem 'mongoid-history'
 gem 'railroady', :path => "./vendor/gems/railroady"
