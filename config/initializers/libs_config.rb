@@ -4,4 +4,4 @@ require 'ostruct'
 end
 
 require "#{Rails.root}/lib/fgraph.rb"
-FinforeAdmin::Application.middleware.use Oink::Middleware
+#FinforeAdmin::Application.middleware.use Oink::Middleware

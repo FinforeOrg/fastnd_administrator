@@ -1,6 +1,13 @@
 class UserCompanyTab
   include Mongoid::Document
   include Finforenet::Models::SharedQuery
+  include Mongoid::Timestamps
+  include Mongoid::History::Trackable
+  track_history   :on => [:all],
+                  :modifier_field => :modifier,
+                  :track_create   =>  true,
+                  :track_update   =>  true,
+                  :track_destroy  =>  true
   
   field :follower,     :type => Integer
   field :is_aggregate, :type => Boolean, :default => false

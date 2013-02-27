@@ -7,18 +7,13 @@ class DashboardsController < ApplicationController
   end
 
   def chart_users
-    start_date, end_date = 2.weeks.ago.midnight, Time.now.utc
-    rows, cols = [], [{:id => 'date',:label => "Date",:type  => "string"},
-                      {:id => 'number',:label => "New Users",:type  => "number"}]
-    start_date = params[:start_at].to_time if params[:start_at].present?
-    end_date = params[:end_at].to_time if params[:end_at].present?
-    
-    while(start_date <= end_date)
-      total = User.search_by({:start_at => start_date, :end_at => end_date}).count
-      rows << {:c => [{ :v => start_date.strftime('%d-%b') },{:v=>total}]}
-      start_date = start_date.tomorrow
-    end
-    
+    cols = [{:id => 'date',:label => "Date",:type  => "string"},
+            {:id => 'number',:label => "New Users",:type  => "number"}]
+
+    start_at = params[:start_at].present? ? params[:start_at].to_time : 2.weeks.ago.midnight
+    end_at = params[:end_at].present? ? params[:end_at].to_time : Time.now.utc
+
+    rows = User.chart_users(start_at, end_at)
     respond_to do |format|
       format.xml  { render :xml => {:cols=>cols,:rows=>rows} }
       format.json { render :json => {:cols=>cols,:rows=>rows} }

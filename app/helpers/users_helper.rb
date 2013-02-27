@@ -9,6 +9,8 @@ module UsersHelper
       submenus << "</li>"
       submenus << "<li>"
         submenus << main_menu("Company Tabs","/users/#{user.id}/company_tabs",controller.action_name == "company_tabs" ? true : false, true)
+      submenus << "<li>"
+        submenus << main_menu("Histories","/users/#{user.id}/histories",controller.action_name == "histories" ? true : false, true)
       submenus << "</li>"
     submenus << "</ul>"
     submenus.html_safe

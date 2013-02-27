@@ -53,6 +53,7 @@ FinforeAdmin::Application.routes.draw do
       get :columns
       get :company_tabs
       get :update_public
+      get :histories
     end
     
     resources :feed_accounts do

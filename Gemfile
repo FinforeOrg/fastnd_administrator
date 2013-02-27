@@ -20,6 +20,7 @@ gem 'crack'
 
 #Database
 gem 'mongoid', '2.4.7'
+gem 'mongoid-history'
 gem 'railroady', :path => "./vendor/gems/railroady"
 
 # Data Support Builders
@@ -69,7 +70,7 @@ gem 'execjs'
 gem 'therubyracer'
 gem 'htmlentities'
 gem 'httparty'
-gem 'kaminari'
+gem 'kaminari', '~> 0.14.1'
 
 # Deployment Requirement
 gem 'capistrano'
@@ -93,8 +94,8 @@ end
 group :development do
   gem 'foreman'
   gem 'thin'
-  gem 'rpm_contrib'
-  gem 'newrelic_rpm'
+  #gem 'rpm_contrib'
+  #gem 'newrelic_rpm'
   gem 'pry'
   gem 'pry-remote'
   gem 'pry-doc'

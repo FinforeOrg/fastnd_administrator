@@ -211,7 +211,7 @@ class FeedInfosController < ApplicationController
 
   def users
     @feed_info = FeedInfo.find(params[:id])
-    @users = User.contains_feed_info(@feed_info.id,params[:page]||1)
+    @users = Kaminari.paginate_array(User.followers_of(@feed_info).compact).page(params[:page]||1).per(25)
     respond_to do |format|
       format.html { render :layout=> !request.xhr?}
     end

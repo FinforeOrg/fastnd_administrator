@@ -2,6 +2,12 @@ class User
   include Mongoid::Document
   include Mongoid::Timestamps
   include Finforenet::Models::ExtUser
+  include Mongoid::History::Trackable
+  track_history   :on => [:all],
+                  :modifier_field => :modifier,
+                  :track_create   =>  true,
+                  :track_update   =>  true,
+                  :track_destroy  =>  true
    
   field :email_work,            :type => String
   field :login,                 :type => String
@@ -32,17 +38,38 @@ class User
                       :if => :has_email?
 
   before_save :before_saving
+
+  def self.chart_users(start_at, end_at)
+    rows = []
+    
+    while(start_at <= end_at)
+      total = search_by({:start_at => start_at, :end_at => start_at.tomorrow}).count
+      rows << {:c => [{:v => start_at.strftime('%d-%b') },{:v=>total}]}
+      start_at = start_at.tomorrow
+    end
+
+    return rows
+  end
   
   def self.search_by(opts={})
-    search_opts = {:created_at => {"$gte" => 2.weeks.ago.midnight, "$lte" => Time.now.utc}}
-    search_opts[:created_at]["$lte"] = opts[:end_at].to_time.utc if opts[:end_at].present?
+    search_opts = {:created_at => {"$gte" => 2.weeks.ago.midnight, "$lt" => Time.now.utc}}
+    search_opts[:created_at]["$lt"] = opts[:end_at].to_time.utc if opts[:end_at].present?
     search_opts[:created_at]["$gte"] = opts[:start_at].to_time.utc if opts[:start_at].present?
     self.where(search_opts).asc(:created_at)
   end
   
-  def self.filter_by(on_page,opts,_includes)
-    Kaminari.paginate_array(self.includes(_includes).where(opts).asc(:full_name)).page(on_page).per(25)
+  def self.filter_by(params)
+    on_page = params[:page] || 1
+    _condition = {"$or" => [
+                    {:login => /#{params[:keyword]}/i}, 
+                    {:full_name => /#{params[:keyword]}/i}
+                 ]}
+
+    _conditions.merge!({"user_profiles.profile_id" => {"$in" => [params[:pid]]}}) unless params[:pid].blank?
+    _includes = params[:pid].present? ? [:user_profiles] : []
+    Kaminari.paginate_array(includes(_includes).where(_condition).asc(:full_name)).page(on_page).per(25)
   end
+
   def self.forgot_password(_email, new_password)
     result = self.where({"$or" => [{:email_work => _email}, {:login => _email}]}).first
     if result.present?

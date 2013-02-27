@@ -29,6 +29,13 @@
 class FeedAccount
   include Mongoid::Document
   include Finforenet::Models::SharedQuery
+  include Mongoid::Timestamps
+  include Mongoid::History::Trackable
+  track_history   :on => [:all],
+                  :modifier_field => :modifier,
+                  :track_create   =>  true,
+                  :track_update   =>  true,
+                  :track_destroy  =>  true
   
   #Fields
   field :name,        :type => String

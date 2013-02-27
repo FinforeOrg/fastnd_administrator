@@ -2,17 +2,11 @@ class UsersController < ApplicationController
   before_filter :before_render
   before_filter :prepare_profiles, :only => [:new,:create,:edit,:update]
   skip_before_filter :require_user, :only => [:columns]
-  #caches_action :index, :cache_path => Proc.new { |c| c.params }, :expires_in => 6.hours
-  #caches_action :company_tabs, :cache_path => Proc.new { |c| c.params }, :expires_in => 6.hours
-  #caches_action :columns, :cache_path => Proc.new { |c| c.params }
+  before_filter :user, :only => [:show, :edit]
   
   def index
-    params[:page] = params[:page] || 1
-    condition = {"$or" => [{:login => /#{params[:keyword]}/i}, {:full_name => /#{params[:keyword]}/i}]}
-    conditions.merge!({"user_profiles.profile_id" => {"$in" => [params[:pid]]}}) unless params[:pid].blank?
     @title = Profile.find(params[:pid]).title unless params[:pid].blank?
-    includes = params[:pid].present? ? [:user_profiles] : []
-    @users = User.filter_by(params[:page],condition,includes)
+    @users = User.filter_by(params)
     @is_content_only = params[:partial] ? true: false
 
     respond_to do |format|
@@ -22,7 +16,6 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.find(params[:id])
     prepare_profiles if @categories.blank?
     respond_to do |format|
       format.html # show.html.erb
@@ -38,7 +31,6 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find(params[:id])
     respond_to do |format|
       format.html { render :layout=> !request.xhr?}
     end
@@ -74,14 +66,14 @@ class UsersController < ApplicationController
   # PUT /users/1
   # PUT /users/1.xml
   def update
-    @user = User.find(params[:id])
 
-    if params[:user][:email_work] != @user.login
-      params[:user][:login] = params[:user][:email_work]
+    if param_user[:email_work] != user.login
+      param_user[:login] = param_user[:email_work]
     end
-    @selected_profiles = params[:user][:profile_ids]
+    @selected_profiles = param_user[:profile_ids]
+
     respond_to do |format|
-      if @user.update_attributes(params[:user])
+      if user.update_attributes(param_user)
         @message = "#{@user.full_name} has been modified."
 	      Resque.enqueue(Finforenet::Jobs::CheckPublicProfiles, @user.id) if @user.is_public
         if !request.xhr?
@@ -96,8 +88,7 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    @user = User.where({:_id => params[:id]}).first
-    @user.destroy if @user
+    user.destroy if user
     cache_expiration
     respond_to do |format|
       if !request.xhr?
@@ -109,20 +100,19 @@ class UsersController < ApplicationController
   end
 
   def columns
-    @user = User.find(params[:id])
-    @accounts = @user.feed_accounts
-    #@account = @user.feed_accounts.build
+    @accounts = user.feed_accounts
     respond_to do |format|
-      if params[:partial].blank?
-        format.html { render :action => "show", :layout=> !request.xhr? }
-      else
-        format.html { render :layout=> !request.xhr? }
-      end
+      format.html { 
+        if params[:partial].blank?
+          render :action => "show", :layout=> !request.xhr? 
+        else
+          format.html { render :layout=> !request.xhr? }
+        end
+      }
     end
   end
 
   def update_public
-    user = User.find params[:id]
     if user
       status = user.is_public ? false : true
       user.update_attribute(:is_public,status)
@@ -133,10 +123,8 @@ class UsersController < ApplicationController
   end
   
   def company_tabs
-    @user = User.find(params[:id])
     @feed_infos = CompanyCompetitor.all.map(&:feed_info).sort_by(&:title)
-   # @feed_infos = Kaminari.paginate_array(CompanyCompetitor.all.map(&:feed_info)).page(params[:page]||1).per(25)
-    @tabs = @user.user_company_tabs.sort_by(&:title) if params[:page].blank?
+    @tabs = user.user_company_tabs.sort_by(&:title) if params[:page].blank?
     respond_to do |format|
       if params[:partial].blank? && params[:page].blank?
         format.html { render :action => "show", :layout=> !request.xhr? }
@@ -153,12 +141,11 @@ class UsersController < ApplicationController
   end
 
   def sorting_column
-    @user ||= User.find(params[:user_id])
     if !params[:orders].blank?
       orders = params[:orders].gsub(/\,$/,"").split(",")
       counter = 1
       orders.each do |kc_id|
-        item = @user.feed_accounts.find(kc_id)
+        item = user.feed_accounts.find(kc_id)
         if item
           item.update_attributes({:position => counter})
           counter += 1
@@ -171,7 +158,19 @@ class UsersController < ApplicationController
     end
   end
 
+  def histories
+    # @histories
+  end
+
   private
+    def user
+      @user ||= User.find(params[:user_id]||params[:id])
+    end
+
+    def param_user 
+      @param_user ||= params[:user]
+    end
+
     def before_render
       @users_selected = true
     end

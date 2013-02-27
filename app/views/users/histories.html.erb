@@ -1,0 +1,37 @@
+<!--[if !IE]>start table_wrapper<![endif]-->
+<div class="table_wrapper">
+  <div class="table_wrapper_inner">
+    <table width="100%" cellspacing="0" cellpadding="0" class="orderable_table" path="<%= sorting_column_users_url({:user_id => @user.id}) %>">
+      <thead><tr>
+        <th style="min-width:55px;"><span>Date</span></th>
+        <th class="photo"><span>Activities</span></th>
+        </tr>
+      </thead>
+     <tbody>
+    <% @activities.each do |activity| %>
+      <tr class="<%= cycle("first", "second") %>">
+        <td style="padding-left:6px" valign="top"><%= activity.updated_at %></td>
+        <td style="padding-left:6px" valign="top"><img src="<%= category_image(account.category) %>" size="24" height="24"/><%= account.category %></td>
+        <td align="center" valign="top" class="feeds_<%= account.id %>"><%= account.user_feeds.count %></td>
+        <td valign="top">
+          <div class="actions_menu" style="width:110px;">
+            <ul>
+              <li><%= link_to "Edit", edit_user_feed_account_path({:user_id => @user.id, :id => account.id,:anchor =>"additional_section"}),:class=>"edit" %></li>
+              <li>
+                <%= link_to "Delete", user_feed_account_path({:user_id => @user.id, :id => account.id,:anchor =>"additional_section"}),:class=>"delete",:title=> protect_string(account.name.to_s) %>
+              </li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+
+    <% if @accounts.size < 1 %>
+      <tr class="first">
+        <td colspan="5" style="text-align:center;"> No Columns or Accounts yet</td>
+      </tr>
+    <% end %>
+
+    </tbody></table>
+  </div>
+</div>
