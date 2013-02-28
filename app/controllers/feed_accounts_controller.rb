@@ -87,7 +87,7 @@ class FeedAccountsController < ApplicationController
     user = User.find params[:user_id]
     if user
       devel_domain = request.subdomain.match(/inter/) ? "http://inter.fastnd.com/" : "http://api.fastnd.com/"
-      auth_domain = request.subdomain.match(/admin\./i) ? "http://fastnd.com/" : devel_domain
+      auth_domain = request.subdomain.match(/admin/i) ? "http://fastnd.com/" : devel_domain
       auth_url = "#{auth_domain}/feed_accounts/#{params[:provider].downcase}/auth?auth_token=#{user.single_access_token}"
       auth_url = auth_url+"&feed_account_id=#{params[:feed_account_id]}" unless params[:feed_account_id].blank?
       auth_url = auth_url+"&auth_secret=#{user.persistence_token}"
