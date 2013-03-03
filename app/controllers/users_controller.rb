@@ -159,7 +159,8 @@ class UsersController < ApplicationController
   end
 
   def histories
-    # @histories
+    @activities = user.activities
+    render :partial => "histories", :layout=> !request.xhr?
   end
 
   private
@@ -174,7 +175,7 @@ class UsersController < ApplicationController
     def before_render
       @users_selected = true
     end
-
+    
     def prepare_profiles
       @categories = ProfileCategory.includes(:profiles)
     end

@@ -1,0 +1,55 @@
+<div class="section">
+  <!--[if !IE]>start title wrapper<![endif]-->
+  <div class="title_wrapper">
+    <span class="title_wrapper_top"></span>
+    <div class="title_wrapper_inner">
+      <span class="title_wrapper_middle"></span>
+      <div class="title_wrapper_content">
+        <h2><%= @user.full_name %></h2>
+        <%= menu_edit_user(@user) %>
+      </div>
+    </div>
+    <span class="title_wrapper_bottom"></span>
+  </div>
+  <!--[if !IE]>end title wrapper<![endif]-->
+
+  <!--[if !IE]>start section content<![endif]-->
+  <div class="section_content">
+    <span class="section_content_top"></span>
+    <div class="section_content_inner">
+      <div class="table_wrapper">
+        <div class="table_wrapper_inner">
+          <table width="100%" cellspacing="0" cellpadding="0" class="orderable_table" path="<%= sorting_column_users_url({:user_id => @user.id}) %>">
+            <thead><tr>
+              <th style="width:155px;"><span>Date</span></th>
+              <th><span>Activities</span></th>
+              </tr>
+            </thead>
+           <tbody>
+          <% @activities.each do |activity| %>
+            <% history = detail_activity(activity) %>
+            <% if history.present? %>
+              <tr class="<%= cycle("first", "second") %>">
+                <td style="padding-left:6px" valign="top"><%= activity.created_at.strftime("%d %b %Y %H:%M:%S") %></td>
+                <td style="padding-left:6px" valign="top">
+                  <%= detail_activity(activity) %>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+
+          <% if @activities.blank? %>
+            <tr class="first">
+              <td colspan="5" style="text-align:center;"> No activity is recorded yet</td>
+            </tr>
+          <% end %>
+
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+    <span class="section_content_bottom"></span>
+  </div>
+  <!--[if !IE]>end section content<![endif]-->
+</div>
+<%= user_form_ajax %>

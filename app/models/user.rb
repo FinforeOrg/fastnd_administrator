@@ -136,6 +136,10 @@ class User
     (self.feed_accounts.count > 0)
   end
 
+  def activities
+    HistoryTracker.all.or(modifier_id: self.id).or("modified.user_id" => self.id).or("_id" => self.id).desc(:created_at)
+  end
+
   def self.find_by_id(val)
     self.where(:_id => val).first
   end
