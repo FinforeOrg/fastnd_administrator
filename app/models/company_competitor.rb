@@ -18,9 +18,14 @@ class CompanyCompetitor
   field :company_ticker,    :type => String
   
   belongs_to :feed_info, :index => true
+  alias :competitor_keyword :keyword
   
   def selected_profiles
     self.feed_info.selected_profiles
+  end
+
+  def self.head_table
+    %w(competitor_keyword competitor_ticker company_keyword broadcast_keyword finance_keyword bing_keyword blog_keyword company_ticker)
   end
   
 end

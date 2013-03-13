@@ -46,9 +46,16 @@ class FeedInfo < Base::FeedInfo
     return result
   end
 
-   def self.CsvHeader
+   def self.CsvHeader(filter_by)
+    relation_colums = []
+    if filter_by =~ /company/i
+      relation_colums = CompanyCompetitor.head_table
+    elsif filter_by =~ /chart|price/i
+      relation_colums = ["tickers"]
+    end
+
     categories = ProfileCategory.all.map(&:title)
-    ["Id", "Title", "Category", "Address"] + categories
+    ["Id", "Title", "Category", "Address"] + categories + relation_colums
   end
 
   def csv_row
@@ -57,6 +64,16 @@ class FeedInfo < Base::FeedInfo
     ProfileCategory.all.each do |pc|
       row << pc.profiles.where(:_id.in => profile_ids).map(&:title).join(",")
     end
+
+    if isChart?
+      row << price_tickers.map(&:ticker).join(",")
+    elsif isCompany?
+      competitor = company_competitor
+      CompanyCompetitor.head_table.each do |attr_competitor|
+        row << competitor.send(attr_competitor)
+      end if competitor
+    end
+
     row
   end
 

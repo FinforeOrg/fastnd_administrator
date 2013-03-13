@@ -27,8 +27,8 @@ module UsersHelper
     actor = activity.actor
     actor_name = actor ? actor.full_name.titleize : "Some One"
     humanize_activity(activity, actor, actor_name)
-  rescue
-    return ""
+   rescue
+     return ""
   end
 
   def humanize_activity(activity, actor, actor_name)
@@ -37,9 +37,9 @@ module UsersHelper
         #{actor_name} #{activity.action} #{activity.modified["category"]} column with title #{activity.modified["name"]}
       STRING
     elsif activity.scope == "user_company_tab"
-      feed_info = FeedInfo.find(activity.modified["feed_info_id"])
-      company_name = feed_info ? feed_info.title.titleize : "Unknown"
-      return"#{actor_name} #{activity.action} #{company_name} company"
+      feed_info = FeedInfo.find(activity.modified["feed_info_id"]) if activity.modified["feed_info_id"].present?
+      company_name = feed_info ? feed_info.title.titleize : "a"
+      return "#{actor_name} #{activity.action} #{company_name} company"
     elsif activity.scope == "user"
       return <<-STRING
         #{actor_name} #{activity.action} user with full name #{activity.modified["full_name"]}
@@ -50,20 +50,23 @@ module UsersHelper
       # owner_name = profile_owner ? profile_owner.full_name : "(user deleted)"
       # return "#{actor_name} #{activity.action} profile from user with full name #{owner_name}"
     elsif activity.scope == "user_feed"
-      account = FeedAccount.find(activity.modified["feed_account_id"])
-      feed_name = activity.modified["title"]
       column_name = "a"
+      feed_name = "a"
+
+      if activity.modified["feed_account_id"].present?
+        account = FeedAccount.find(activity.modified["feed_account_id"])
+        feed_name = activity.modified["title"]
+      end
 
       if account
-        account_owner = actor.class.to_s == "AdminCore" ? account.user : actor
-        actor_name = account_owner ? account_owner.full_name.titleize : "Some One"
         column_name = account.name
+        feed_name = account.category
       end
-     
+
       unless feed_name.present?
         feed_info = FeedInfo.find(activity.modified["feed_info_id"])
         feed_name = feed_info.title
-      end
+      end if activity.modified["feed_info_id"].present?
 
       return <<-STRING
         #{actor_name} #{activity.action} #{feed_name} feed for #{column_name} column
@@ -74,6 +77,14 @@ module UsersHelper
       return <<-STRING
         #{actor_name} #{activity.action} #{activity.modified["category"]} #{appendix_connection} account
       STRING
+    elsif activity.scope == "user"
+      if activity.action == "create"
+        return <<-STRING
+          #{activity.modified["full_name"]} just join
+        STRING
+      else
+        return ""
+      end
     else
       ""
     end

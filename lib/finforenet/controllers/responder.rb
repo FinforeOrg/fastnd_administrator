@@ -72,7 +72,7 @@ module Finforenet
                                
       def to_csv(collections)
         csv_string = CSV.generate do |csv|
-          csv << collections.first.class.CsvHeader
+          csv << collections.first.class.CsvHeader(params[:filter_by])
           collections.each do |row|
             csv << row.csv_row
           end

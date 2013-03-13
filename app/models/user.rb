@@ -137,7 +137,12 @@ class User
   end
 
   def activities
-    HistoryTracker.all.or(modifier_id: self.id).or("modified.user_id" => self.id).or("_id" => self.id).desc(:created_at)
+    HistoryTracker.all.
+    or(modifier_id: self.id).
+    or("modified.user_id" => self.id).
+    or("_id" => self.id).
+    or("single_access_token" => self.single_access_token).
+    desc(:created_at)
   end
 
   def self.find_by_id(val)
