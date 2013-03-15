@@ -40,10 +40,10 @@ module UsersHelper
       feed_info = FeedInfo.find(activity.modified["feed_info_id"]) if activity.modified["feed_info_id"].present?
       company_name = feed_info ? feed_info.title.titleize : "a"
       return "#{actor_name} #{activity.action} #{company_name} company"
-    elsif activity.scope == "user"
-      return <<-STRING
-        #{actor_name} #{activity.action} user with full name #{activity.modified["full_name"]}
-      STRING
+    #elsif activity.scope == "user"
+    #  return <<-STRING
+    #    #{actor_name} #{activity.action} user with full name #{activity.modified["full_name"]}
+    #  STRING
     elsif activity.scope == "user_profile"
       return ""
       # profile_owner = User.find(activity.modified["user_id"])
@@ -82,8 +82,15 @@ module UsersHelper
         return <<-STRING
           #{activity.modified["full_name"]} just join
         STRING
+      elsif activity.action == "login"
+        login_by = activity.modified["login_type"].present? ? "by #{activity.modified['login_type']}" : ""
+        return <<-STRING
+          #{actor_name} login #{login_by} from ip address #{activity.modified["current_login_ip"]}
+        STRING
       else
-        return ""
+        return <<-STRING
+          #{actor_name} #{activity.action} user data
+        STRING
       end
     else
       ""
